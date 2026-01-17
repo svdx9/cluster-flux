@@ -40,24 +40,7 @@ spec:
     - port: 9898
       targetPort: 9898
 ---
-# 3. The Gateway (The Entrypoint)
-# This requests Nginx Fabric to open port 80 for this domain.
-apiVersion: gateway.networking.k8s.io/v1
-kind: Gateway
-metadata:
-  name: podinfo-gateway
-  namespace: podinfo
-spec:
-  gatewayClassName: nginx # This links to the Nginx Fabric controller
-  listeners:
-    - name: http
-      protocol: HTTP
-      port: 80
-      allowedRoutes:
-        namespaces:
-          from: Same
----
-# 4. The HTTPRoute (The Routing Logic)
+# 3. The HTTPRoute (The Routing Logic)
 apiVersion: gateway.networking.k8s.io/v1
 kind: HTTPRoute
 metadata:
@@ -65,7 +48,8 @@ metadata:
   namespace: podinfo
 spec:
   parentRefs:
-    - name: podinfo-gateway
+    - name: shared-gateway
+      namespace: ingress-gateway
   hostnames:
     - "podinfo.lab.local"
   rules:

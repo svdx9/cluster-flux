@@ -57,9 +57,6 @@ apply() {
 
     log "Configuration applied. Waiting 30 seconds for services to start..."
     sleep 30
-
-    # apply edge patch
-    talosctl patch machineconfig --nodes 10.7.2.10 --patch @talos/patches/edge.yaml
 }
 
 bootstrap() {

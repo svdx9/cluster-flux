@@ -20,8 +20,7 @@ spec:
       # This creates the Service LoadBalancer to get an IP from MetalLB
       type: LoadBalancer
     nginx:
-      # High Availability settings
-      replicaCount: 2
+      replicaCount: 1
     # Ensure compatibility with the installed Gateway API version
     gateway:
       className: nginx

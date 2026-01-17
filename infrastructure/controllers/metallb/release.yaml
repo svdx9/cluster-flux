@@ -19,5 +19,7 @@ spec:
     createNamespace: true
   values:
     # Minimal config to get it running
+    controller:
+      webhookMode: enabled
     speaker:
       tolerateMaster: true

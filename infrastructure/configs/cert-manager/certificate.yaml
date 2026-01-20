@@ -9,5 +9,5 @@ spec:
     name: letsencrypt-dns
     kind: ClusterIssuer
   dnsNames:
-    - "*.c.va1.uk"
-    - "c.va1.uk"
+    - "*.va1.uk"
+    - "va1.uk"

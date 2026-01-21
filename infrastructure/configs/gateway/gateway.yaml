@@ -11,7 +11,10 @@ spec:
       port: 80
       allowedRoutes:
         namespaces:
-          from: All
+          from: Selector
+          selector:
+            matchLabels:
+              gateway-access: shared
     - name: https
       protocol: HTTPS
       port: 443
@@ -22,4 +25,7 @@ spec:
             name: wildcard-va1-uk-tls
       allowedRoutes:
         namespaces:
-          from: All
+          from: Selector
+          selector:
+            matchLabels:
+              gateway-access: shared

@@ -51,7 +51,7 @@ spec:
     - name: shared-gateway
       namespace: ingress-gateway
   hostnames:
-    - "podinfo.c.va1.uk"
+    - "podinfo.va1.uk"
   rules:
     - matches:
         - path:

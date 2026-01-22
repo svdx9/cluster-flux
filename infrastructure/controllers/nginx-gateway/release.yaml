@@ -2,10 +2,10 @@
 apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
-  name: nginx-gateway-fabric
+  name: ngf
   namespace: flux-system
 spec:
-  releaseName: nginx-gateway-fabric
+  releaseName: ngf
   interval: 30m
   chart:
     spec:
@@ -19,13 +19,4 @@ spec:
   targetNamespace: nginx-gateway
   install:
     createNamespace: true
-  values:
-    clusterDomain: cluster.local
-    service:
-      # This creates the Service LoadBalancer to get an IP from MetalLB
-      type: LoadBalancer
-    nginx:
-      replicaCount: 1
-    # Ensure compatibility with the installed Gateway API version
-    gateway:
-      className: nginx
+  values: {} # run with defaults for now

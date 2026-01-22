@@ -4,3 +4,4 @@ resources:
   - namespace.yaml
   - gateway.yaml
   - http-redirect.yaml
+  - certificates.yaml

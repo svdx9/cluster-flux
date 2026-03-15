@@ -25,6 +25,8 @@ tooling conventions
 - always shorten kubectl to `k`
 - never use wget; use curl only
 - prefer standard tools and well-known patterns
+- use rg instead of grep
+- use yq to target sections of yaml files
 
 style and communication
 - be brief, clear, and precise

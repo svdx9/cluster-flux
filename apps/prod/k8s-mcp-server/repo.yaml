@@ -8,3 +8,5 @@ spec:
   interval: 12h
   type: oci
   url: oci://ghcr.io/containers/charts/kubernetes-mcp-server
+  ref:
+    tag: v0.0.58

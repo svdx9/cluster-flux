@@ -8,13 +8,12 @@ spec:
   interval: 30m
   chart:
     spec:
-      chart: kubernetes-mcp-server
-      version: "0.1.0"
+      chart: ./charts/kubernetes-mcp-server
       sourceRef:
-        kind: HelmRepository
+        kind: GitRepository
         name: kubernetes-mcp-server
         namespace: flux-system
       interval: 12h
   values:
     ingress:
-      enabled: false # set to true and configure hostname if you want external access via shared-gateway
+      enabled: false

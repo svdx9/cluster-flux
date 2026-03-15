@@ -74,3 +74,62 @@ To deploy a new application, follow these steps:
     git commit -m "feat: Add deployment for my-new-app"
     git push
     ```
+
+## Deploying a Helm-based Application
+
+For apps distributed as Helm charts, use Flux's `HelmRepository` and `HelmRelease` resources instead of raw manifests. The structure mirrors what is used for infrastructure controllers (e.g. `cert-manager`, `metallb`).
+
+1.  **Create the application directory** under `apps/` as normal.
+
+2.  **Add a `repo.yaml`** to define the Helm chart source:
+
+    ```yaml
+    apiVersion: source.toolkit.fluxcd.io/v1
+    kind: HelmRepository
+    metadata:
+      name: my-new-app
+      namespace: flux-system
+    spec:
+      interval: 12h
+      url: https://charts.example.com
+    ```
+
+3.  **Add a `release.yaml`** to define the release and values:
+
+    ```yaml
+    apiVersion: helm.toolkit.fluxcd.io/v2
+    kind: HelmRelease
+    metadata:
+      name: my-new-app
+      namespace: flux-system
+    spec:
+      interval: 30m
+      chart:
+        spec:
+          chart: my-new-app
+          version: "1.0.0"
+          sourceRef:
+            kind: HelmRepository
+            name: my-new-app
+            namespace: flux-system
+          interval: 12h
+      targetNamespace: my-new-app
+      install:
+        createNamespace: true
+      values:
+        # chart-specific values go here
+    ```
+
+    `install.createNamespace: true` lets Flux create the namespace automatically, so no separate `namespace.yaml` is needed.
+
+4.  **Add a `kustomization.yaml`** referencing both files:
+
+    ```yaml
+    apiVersion: kustomize.config.k8s.io/v1beta1
+    kind: Kustomization
+    resources:
+      - repo.yaml
+      - release.yaml
+    ```
+
+5.  **Register in `apps/kustomization.yaml`** and commit/push as normal.

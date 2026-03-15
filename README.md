@@ -31,6 +31,7 @@ To deploy a new application, follow these steps:
 
     Example `apps/prod/my-new-app/deployment.yaml`:
     ```yaml
+    ---
     apiVersion: apps/v1
     kind: Deployment
     metadata:
@@ -43,6 +44,7 @@ To deploy a new application, follow these steps:
     List your manifest files as resources:
 
     ```yaml
+    ---
     apiVersion: kustomize.config.k8s.io/v1beta1
     kind: Kustomization
     resources:
@@ -55,6 +57,7 @@ To deploy a new application, follow these steps:
     Add your app directory to `apps/prod/kustomization.yaml` (or `apps/dev/kustomization.yaml`):
 
     ```yaml
+    ---
     apiVersion: kustomize.config.k8s.io/v1beta1
     kind: Kustomization
     resources:
@@ -82,6 +85,7 @@ For apps distributed as Helm charts, use Flux's `HelmRepository` and `HelmReleas
 2.  **Add a `repo.yaml`** to define the Helm chart source:
 
     ```yaml
+    ---
     apiVersion: source.toolkit.fluxcd.io/v1
     kind: HelmRepository
     metadata:
@@ -95,6 +99,7 @@ For apps distributed as Helm charts, use Flux's `HelmRepository` and `HelmReleas
 3.  **Add a `release.yaml`** to define the release and values:
 
     ```yaml
+    ---
     apiVersion: helm.toolkit.fluxcd.io/v2
     kind: HelmRelease
     metadata:
@@ -121,6 +126,7 @@ For apps distributed as Helm charts, use Flux's `HelmRepository` and `HelmReleas
 4.  **Add a `kustomization.yaml`** referencing both files:
 
     ```yaml
+    ---
     apiVersion: kustomize.config.k8s.io/v1beta1
     kind: Kustomization
     resources:

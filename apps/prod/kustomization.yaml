@@ -4,3 +4,12 @@ kind: Kustomization
 resources:
   - namespace.yaml
   - podinfo
+  - k8s-mcp-server
+
+patches:
+  - patch: |-
+      - op: add
+        path: /spec/targetNamespace
+        value: prod
+    target:
+      kind: HelmRelease

@@ -10,68 +10,66 @@ sops -d talos/controlplane.yaml | talosctl apply-config --nodes 10.7.2.10 --file
 
 ## Deploying a New Application
 
+Apps are organised into two directories based on environment:
+
+- `apps/prod/` — production apps, deployed to the `prod` namespace
+- `apps/dev/` — development apps, deployed to the `dev` namespace
+
+Each environment has a shared `namespace.yaml` at its root (e.g. `apps/prod/namespace.yaml`). The `gateway-access: shared` label on these namespaces permits the `shared-gateway` (in the `ingress-gateway` namespace) to route traffic into them via `HTTPRoute` resources.
+
 To deploy a new application, follow these steps:
 
 1.  **Create Application Directory:**
-    Create a new subdirectory for your application under the `apps/` directory. For example, `apps/my-new-app/`.
+    Create a subdirectory for your app under the appropriate environment, e.g. `apps/prod/my-new-app/`.
 
-2.  **Add Kustomization:**
-    Inside your new application directory, create a `kustomization.yaml` file. This file will define how your application's manifests are structured and built.
+2.  **Define Kubernetes Manifests:**
+    Create manifest files within your app directory. Each resource should reference the shared environment namespace (`prod` or `dev`). Split resources into separate files by kind:
 
-    Example `apps/my-new-app/kustomization.yaml`:
+    - `deployment.yaml`
+    - `service.yaml`
+    - `httproute.yaml` (if the app needs external access via the shared gateway)
+
+    Example `apps/prod/my-new-app/deployment.yaml`:
     ```yaml
-    apiVersion: kustomize.config.k8s.io/v1beta1
-    kind: Kustomization
-
-    resources:
-      - deployment.yaml
-      - service.yaml
-      # Add other manifest files here
-    ```
-
-3.  **Define Kubernetes Manifests:**
-    Create the necessary Kubernetes manifest files within your application's directory (`apps/my-new-app/`). Define the `Namespace` inline at the top of `deployment.yaml` alongside your other resources.
-
-    If the app needs to be reachable via the shared gateway, add the `gateway-access: shared` label to the namespace:
-
-    ```yaml
-    apiVersion: v1
-    kind: Namespace
-    metadata:
-      name: my-new-app
-      labels:
-        gateway-access: shared  # required for HTTPRoute access via shared-gateway
-    ---
     apiVersion: apps/v1
     kind: Deployment
     metadata:
       name: my-new-app
-      namespace: my-new-app
+      namespace: prod
     # ...
     ```
 
-    If the app does not need external access, omit the `gateway-access` label. There is no strict rule on namespace naming — use whatever grouping makes sense (one per app, or shared namespaces for related apps).
-
-4.  **Register Application with Flux:**
-    Add your new application directory as a resource in `apps/kustomization.yaml`:
+3.  **Add a `kustomization.yaml`:**
+    List your manifest files as resources:
 
     ```yaml
     apiVersion: kustomize.config.k8s.io/v1beta1
     kind: Kustomization
-
     resources:
+      - deployment.yaml
+      - service.yaml
+      - httproute.yaml
+    ```
+
+4.  **Register with the environment kustomization:**
+    Add your app directory to `apps/prod/kustomization.yaml` (or `apps/dev/kustomization.yaml`):
+
+    ```yaml
+    apiVersion: kustomize.config.k8s.io/v1beta1
+    kind: Kustomization
+    resources:
+      - namespace.yaml
       - podinfo
       - my-new-app  # add your app here
     ```
 
-    Flux watches `./apps` via `clusters/production/apps.yaml` and will pick up the new entry automatically.
+    Flux watches `./apps` via `clusters/production/apps.yaml` and will pick up the change automatically.
 
 5.  **Commit and Push:**
-    Commit your changes to the Git repository and push them. Flux CD will detect the changes and apply them to the cluster.
 
     ```bash
     git add .
-    git commit -m "feat: Add deployment for my-new-app"
+    git commit -m "feat: add my-new-app to prod"
     git push
     ```
 
@@ -79,7 +77,7 @@ To deploy a new application, follow these steps:
 
 For apps distributed as Helm charts, use Flux's `HelmRepository` and `HelmRelease` resources instead of raw manifests. The structure mirrors what is used for infrastructure controllers (e.g. `cert-manager`, `metallb`).
 
-1.  **Create the application directory** under `apps/` as normal.
+1.  **Create the application directory** under `apps/prod/` or `apps/dev/` as appropriate.
 
 2.  **Add a `repo.yaml`** to define the Helm chart source:
 
@@ -113,9 +111,7 @@ For apps distributed as Helm charts, use Flux's `HelmRepository` and `HelmReleas
             name: my-new-app
             namespace: flux-system
           interval: 12h
-      targetNamespace: my-new-app
-      install:
-        createNamespace: true
+      targetNamespace: prod  # or dev
       values:
         # chart-specific values go here
     ```

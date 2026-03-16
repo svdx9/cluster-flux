@@ -33,10 +33,3 @@ spec:
         enabled: false
     ingress:
       enabled: false
-    httpRoute:
-      enabled: true
-      parentRefs:
-        - name: shared-gateway
-          namespace: ingress-gateway
-      hostnames:
-        - jellyfin.va1.uk

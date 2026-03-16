@@ -5,7 +5,7 @@ metadata:
   name: jellyfin-minio
   namespace: prod
 spec:
-  type: LoadBalancer
+  type: ClusterIP
   selector:
     app.kubernetes.io/name: jellyfin
   ports:

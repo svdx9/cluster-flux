@@ -146,6 +146,78 @@ spec:
 
 Register in `apps/prod/kustomization.yaml` and commit.
 
+## Networking Architecture
+
+This cluster uses a layered networking model. Each layer has a distinct responsibility:
+
+```
+Internet / Local Network
+        |
+   [MetalLB]           ← assigns real IPs to LoadBalancer Services
+        |
+[NGINX Gateway Fabric]  ← the actual nginx proxy (runs as a pod)
+        |
+   [Gateway]           ← K8s object declaring "listen on port 80/443"
+        |
+[HTTPRoute/TCPRoute]   ← K8s objects declaring "route hostname X → service Y"
+        |
+  [ClusterIP Service]  ← gives a pod a stable internal DNS name
+        |
+      [Pod]
+```
+
+### ClusterIP
+
+A virtual IP reachable only from inside the cluster. Used for all app services (jellyfin, podinfo, k8s-mcp-server) — they are internal targets that the Gateway proxies to. Do not expose these directly.
+
+### LoadBalancer
+
+Requests an external IP from MetalLB (pool: `10.7.0.248–10.7.0.255`). Used when a service needs a raw IP — either because it uses a non-HTTP protocol (e.g. MinIO S3 on port 9000), or to expose the Gateway Fabric itself so external traffic can enter the cluster.
+
+### Gateway (the K8s object)
+
+A declaration of "I want a proxy listening on these ports with this TLS config." The `shared-gateway` listens on port 80 (HTTP) and 443 (HTTPS, terminating with `wildcard-va1-uk-tls`). It is not the proxy itself — it is a config object that NGINX Gateway Fabric reads.
+
+### NGINX Gateway Fabric
+
+The controller that implements the Gateway API. It watches Gateway, HTTPRoute, and TCPRoute objects and translates them into live nginx configuration. NGINX is to Gateway as a driver is to a steering wheel.
+
+### HTTPRoute / TCPRoute
+
+Routing rules attached to a Gateway.
+
+- **HTTPRoute**: Layer 7 — matches on hostname, path, or headers. Used for all `*.va1.uk` apps.
+- **TCPRoute**: Layer 4 — forwards a raw port with no HTTP awareness. Used for MinIO because S3 clients connect by IP:port, not hostname.
+
+### Traffic flow example
+
+**Browser → `https://jellyfin.va1.uk`**
+
+```
+1. DNS resolves jellyfin.va1.uk → MetalLB IP (e.g. 10.7.0.248)
+2. TCP hits NGINX Gateway Fabric pod (via its LoadBalancer Service)
+3. NGINX terminates TLS using wildcard-va1-uk-tls
+4. NGINX checks HTTPRoutes → finds jellyfin.va1.uk → prod-jellyfin:8096
+5. Forwards to ClusterIP Service → Jellyfin pod
+```
+
+**S3 client → MinIO at `10.7.0.249:9000`**
+
+```
+1. Client connects directly to MetalLB IP:9000
+2. Hits the jellyfin-minio LoadBalancer Service → Jellyfin pod port 9000
+```
+
+### Summary
+
+| Concern | Solution |
+|---|---|
+| External access to all apps | One shared Gateway (one IP, port 443) |
+| TLS termination | Gateway with wildcard cert |
+| Internal service discovery | ClusterIP + DNS |
+| Non-HTTP protocols (S3) | LoadBalancer Service or TCPRoute |
+| IP address management | MetalLB pool (`10.7.0.248–10.7.0.255`) |
+
 ## Secrets and SOPS
 
 Secrets are encrypted with [SOPS](https://github.com/getsops/sops) using an age key. The rules in `.sops.yaml` apply only to files matching `*.sops.yaml` and encrypt only `data` and `stringData` fields.

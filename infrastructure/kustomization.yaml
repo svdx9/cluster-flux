@@ -6,5 +6,5 @@ resources:
   - controllers/cert-manager
   - controllers/gateway-api
   - controllers/nginx-gateway
-  # - networking
   # - storage
+  - controllers/democratic-csi

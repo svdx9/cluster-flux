@@ -1,0 +1,38 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: jellyfin
+  namespace: flux-system
+spec:
+  interval: 30m
+  chart:
+    spec:
+      chart: jellyfin
+      version: "2.7.0"
+      sourceRef:
+        kind: HelmRepository
+        name: jellyfin
+        namespace: flux-system
+      interval: 12h
+  values:
+    persistence:
+      config:
+        type: pvc
+        storageClass: iscsi
+        accessMode: ReadWriteOnce
+        size: 10Gi
+      cache:
+        type: pvc
+        storageClass: iscsi
+        accessMode: ReadWriteOnce
+        size: 50Gi
+    ingress:
+      enabled: false
+    httpRoute:
+      enabled: true
+      parentRefs:
+        - name: shared-gateway
+          namespace: ingress-gateway
+      hostnames:
+        - jellyfin.va1.uk

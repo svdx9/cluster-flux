@@ -5,6 +5,7 @@ resources:
   - namespace.yaml
   - podinfo
   - k8s-mcp-server
+  - jellyfin
 
 patches:
   - patch: |-

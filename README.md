@@ -1,137 +1,194 @@
 # cluster-flux
 
-## talos
+GitOps configuration for a homelab Kubernetes cluster. Flux CD reconciles the cluster state from this repository.
 
-apply configuration for sops encrypted file
+## Repository Structure
 
 ```
+clusters/production/     # Flux entrypoint
+infrastructure/
+  controllers/           # Helm-based operators (install CRDs and run control loops)
+    networking/          # metallb, gateway-api, nginx-gateway
+    storage/             # democratic-csi
+    security/            # cert-manager
+  configs/               # Custom resources that configure the operators above
+    metallb/             # IPAddressPool, L2Advertisement
+    gateway/             # Gateway, HTTPRoutes, namespace
+    cert-manager/        # ClusterIssuer, Certificate, Cloudflare token
+apps/
+  prod/                  # Production workloads (prod namespace)
+  dev/                   # Development workloads (dev namespace)
+talos/                   # Talos Linux OS configuration
+```
+
+## Why controllers/ and configs/ are separate
+
+Controllers install operators via Helm — they define CRDs. Configs create instances of those CRDs to configure the operators. These must be applied in order: you cannot create an `IPAddressPool` until MetalLB's Helm chart has installed the CRD.
+
+Flux enforces this with explicit dependencies:
+
+```
+infrastructure-controllers → infrastructure-configs → apps
+```
+
+Each is a separate Flux `Kustomization` object in `clusters/production/`. The `dependsOn` field ensures Flux will not begin applying configs until all controller HelmReleases are healthy, and will not deploy apps until configs are ready.
+
+## Adding a new infrastructure operator
+
+Choose the appropriate category under `infrastructure/controllers/`:
+
+- `networking/` — anything that handles traffic routing, load balancing, or ingress
+- `storage/` — storage provisioners and CSI drivers
+- `security/` — PKI, certificate management, secret management
+
+Create a directory with these files:
+
+```
+infrastructure/controllers/<category>/<name>/
+  namespace.yaml     # dedicated namespace for the operator
+  repo.yaml          # HelmRepository source
+  release.yaml       # HelmRelease with chart version and values
+  kustomization.yaml # lists the above three files as resources
+```
+
+Register it in `infrastructure/controllers/kustomization.yaml`.
+
+If the operator needs configuration (CRD instances, pools, issuers, gateways, etc.), add a matching directory under `infrastructure/configs/<name>/` and register it in `infrastructure/configs/kustomization.yaml`. The config will be applied after all controllers are healthy.
+
+If the config directory contains SOPS-encrypted secrets, name them `*.sops.yaml` — the `infrastructure-configs` Flux Kustomization has SOPS decryption configured. If the encrypted secret belongs in the controllers layer (e.g. a `valuesFrom` secret for a HelmRelease), it will also be decrypted as `controllers.yaml` has decryption configured too.
+
+## Deploying a new application
+
+Apps live under `apps/prod/` or `apps/dev/` depending on target environment. Each environment has a shared `namespace.yaml` at its root with the `gateway-access: shared` label, which permits the `shared-gateway` in the `ingress-gateway` namespace to route traffic into the namespace via `HTTPRoute` resources.
+
+### Raw manifests
+
+Create a directory for the app and add standard Kubernetes resources:
+
+```
+apps/prod/my-app/
+  deployment.yaml
+  service.yaml
+  httproute.yaml     # only if the app needs external HTTP/HTTPS access
+  kustomization.yaml
+```
+
+`kustomization.yaml` lists the files as resources:
+
+```yaml
+---
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - deployment.yaml
+  - service.yaml
+  - httproute.yaml
+```
+
+Register the app directory in `apps/prod/kustomization.yaml`:
+
+```yaml
+resources:
+  - namespace.yaml
+  - my-app
+```
+
+### Helm-based apps
+
+Create a directory under `apps/prod/` with a HelmRepository source and HelmRelease:
+
+```
+apps/prod/my-app/
+  repo.yaml          # HelmRepository
+  release.yaml       # HelmRelease
+  httproute.yaml     # optional, if HTTP access is needed
+  kustomization.yaml
+```
+
+`repo.yaml`:
+
+```yaml
+---
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: HelmRepository
+metadata:
+  name: my-app
+  namespace: flux-system
+spec:
+  interval: 12h
+  url: https://charts.example.com
+```
+
+`release.yaml`:
+
+```yaml
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: my-app
+  namespace: flux-system
+spec:
+  interval: 30m
+  chart:
+    spec:
+      chart: my-app
+      version: "1.0.0"
+      sourceRef:
+        kind: HelmRepository
+        name: my-app
+        namespace: flux-system
+      interval: 12h
+  targetNamespace: prod
+  values:
+    # chart-specific values
+```
+
+Register in `apps/prod/kustomization.yaml` and commit.
+
+## Secrets and SOPS
+
+Secrets are encrypted with [SOPS](https://github.com/getsops/sops) using an age key. The rules in `.sops.yaml` apply only to files matching `*.sops.yaml` and encrypt only `data` and `stringData` fields.
+
+To create a new secret:
+
+```bash
+# Write the plain Secret yaml, then encrypt in place
+sops --encrypt --in-place path/to/secret.sops.yaml
+```
+
+To edit an existing secret:
+
+```bash
+sops path/to/secret.sops.yaml
+```
+
+Never commit unencrypted secrets. The age private key must be present in the environment (`SOPS_AGE_KEY` or `~/.config/sops/age/keys.txt`) to decrypt or edit.
+
+## Talos
+
+Apply a SOPS-encrypted Talos config:
+
+```bash
 sops -d talos/controlplane.yaml | talosctl apply-config --nodes 10.7.2.10 --file /dev/stdin
 ```
 
-## Deploying a New Application
+See `talos/README.md` for upgrade and patch procedures.
 
-Apps are organised into two directories based on environment:
+## Flux quick reference
 
-- `apps/prod/` — production apps, deployed to the `prod` namespace
-- `apps/dev/` — development apps, deployed to the `dev` namespace
+```bash
+# Check reconciliation status
+flux get all -A
 
-Each environment has a shared `namespace.yaml` at its root (e.g. `apps/prod/namespace.yaml`). The `gateway-access: shared` label on these namespaces permits the `shared-gateway` (in the `ingress-gateway` namespace) to route traffic into them via `HTTPRoute` resources.
+# Force reconcile a specific layer
+flux reconcile kustomization infrastructure-controllers --with-source
+flux reconcile kustomization infrastructure-configs --with-source
+flux reconcile kustomization apps --with-source
 
-To deploy a new application, follow these steps:
+# Check HelmRelease status
+flux get helmrelease -A
 
-1.  **Create Application Directory:**
-    Create a subdirectory for your app under the appropriate environment, e.g. `apps/prod/my-new-app/`.
-
-2.  **Define Kubernetes Manifests:**
-    Create manifest files within your app directory. Each resource should reference the shared environment namespace (`prod` or `dev`). Split resources into separate files by kind:
-
-    - `deployment.yaml`
-    - `service.yaml`
-    - `httproute.yaml` (if the app needs external access via the shared gateway)
-
-    Example `apps/prod/my-new-app/deployment.yaml`:
-    ```yaml
-    ---
-    apiVersion: apps/v1
-    kind: Deployment
-    metadata:
-      name: my-new-app
-      namespace: prod
-    # ...
-    ```
-
-3.  **Add a `kustomization.yaml`:**
-    List your manifest files as resources:
-
-    ```yaml
-    ---
-    apiVersion: kustomize.config.k8s.io/v1beta1
-    kind: Kustomization
-    resources:
-      - deployment.yaml
-      - service.yaml
-      - httproute.yaml
-    ```
-
-4.  **Register with the environment kustomization:**
-    Add your app directory to `apps/prod/kustomization.yaml` (or `apps/dev/kustomization.yaml`):
-
-    ```yaml
-    ---
-    apiVersion: kustomize.config.k8s.io/v1beta1
-    kind: Kustomization
-    resources:
-      - namespace.yaml
-      - podinfo
-      - my-new-app  # add your app here
-    ```
-
-    Flux watches `./apps` via `clusters/production/apps.yaml` and will pick up the change automatically.
-
-5.  **Commit and Push:**
-
-    ```bash
-    git add .
-    git commit -m "feat: add my-new-app to prod"
-    git push
-    ```
-
-## Deploying a Helm-based Application
-
-For apps distributed as Helm charts, use Flux's `HelmRepository` and `HelmRelease` resources instead of raw manifests. The structure mirrors what is used for infrastructure controllers (e.g. `cert-manager`, `metallb`).
-
-1.  **Create the application directory** under `apps/prod/` or `apps/dev/` as appropriate.
-
-2.  **Add a `repo.yaml`** to define the Helm chart source:
-
-    ```yaml
-    ---
-    apiVersion: source.toolkit.fluxcd.io/v1
-    kind: HelmRepository
-    metadata:
-      name: my-new-app
-      namespace: flux-system
-    spec:
-      interval: 12h
-      url: https://charts.example.com
-    ```
-
-3.  **Add a `release.yaml`** to define the release and values:
-
-    ```yaml
-    ---
-    apiVersion: helm.toolkit.fluxcd.io/v2
-    kind: HelmRelease
-    metadata:
-      name: my-new-app
-      namespace: flux-system
-    spec:
-      interval: 30m
-      chart:
-        spec:
-          chart: my-new-app
-          version: "1.0.0"
-          sourceRef:
-            kind: HelmRepository
-            name: my-new-app
-            namespace: flux-system
-          interval: 12h
-      targetNamespace: prod  # or dev
-      values:
-        # chart-specific values go here
-    ```
-
-    `install.createNamespace: true` lets Flux create the namespace automatically, so no separate `namespace.yaml` is needed.
-
-4.  **Add a `kustomization.yaml`** referencing both files:
-
-    ```yaml
-    ---
-    apiVersion: kustomize.config.k8s.io/v1beta1
-    kind: Kustomization
-    resources:
-      - repo.yaml
-      - release.yaml
-    ```
-
-5.  **Register in `apps/kustomization.yaml`** and commit/push as normal.
+# Check recent events for failures
+flux events -A
+```

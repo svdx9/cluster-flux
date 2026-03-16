@@ -17,3 +17,9 @@ spec:
   values:
     ingress:
       enabled: false
+    rbac:
+      extraClusterRoleBindings:
+        - name: use-view
+          roleRef:
+            name: view
+            external: true

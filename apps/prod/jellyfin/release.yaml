@@ -18,15 +18,19 @@ spec:
   values:
     persistence:
       config:
+        enabled: true
         type: pvc
         storageClass: iscsi
         accessMode: ReadWriteOnce
         size: 10Gi
-      cache:
+      media:
+        enabled: true
         type: pvc
         storageClass: iscsi
         accessMode: ReadWriteOnce
         size: 50Gi
+      cache:
+        enabled: false
     ingress:
       enabled: false
     httpRoute:

@@ -1,56 +1,66 @@
 apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
-    name: democratic-csi
-    namespace: flux-system
+  name: democratic-csi
+  namespace: flux-system
 spec:
-    releaseName: democratic-csi
-    interval: 30m
-    chart:
-        spec:
-            chart: democratic-csi
-            version: 0.15.1
-            sourceRef:
-                kind: HelmRepository
-                name: democratic-csi
-                namespace: flux-system
-            interval: 12h
-    targetNamespace: democratic-csi-system
-    timeout: 10m
-    install:
-        createNamespace: true
-    values:
-        csiDriver:
-            name: iscsi
-        driver:
-            config:
-                driver: freenas-api-iscsi
-                instance_id: iscsi-cluster
-                httpConnection:
-                    protocol: https
-                    host: tower.bigpri.me
-                    port: 443
-                    apiKey: ""
-                    allowInsecure: false
-                zfs:
-                    datasetParentName: storage/k8s-ds/v
-                    detachedSnapshotsDatasetParentName: storage/k8s-ds/s
-                iscsi:
-                    targetPortal: tower.bigpri.me:3260
-                    targetGroups:
-                        - targetGroupPortalGroup: 1
-                          targetGroupInitiatorGroup: 2
-                          targetGroupAuthType: None
-        storageClasses:
-            - name: iscsi
-              defaultClass: false
-              reclaimPolicy: Delete
-              volumeBindingMode: Immediate
-              allowVolumeExpansion: true
-              parameters:
-                fsType: ext4
-    valuesFrom:
-      - kind: Secret
-        name: truenas-api-credentials
-        valuesKey: apiKey
-        targetPath: driver.config.httpConnection.apiKey
+  releaseName: democratic-csi
+  interval: 30m
+  chart:
+    spec:
+      chart: democratic-csi
+      version: 0.15.1
+      sourceRef:
+        kind: HelmRepository
+        name: democratic-csi
+        namespace: flux-system
+      interval: 12h
+  targetNamespace: democratic-csi-system
+  timeout: 10m
+  install:
+    createNamespace: true
+  values:
+    csiDriver:
+      name: iscsi
+    node:
+      hostPID: true
+      driver:
+        extraEnv:
+          - name: ISCSIADM_HOST_STRATEGY
+            value: nsenter
+          - name: ISCSIADM_HOST_PATH
+            value: /usr/local/sbin/iscsiadm
+        iscsiDirHostPath: /etc/iscsi
+        iscsiDirHostPathType: ""
+    driver:
+      config:
+        driver: freenas-api-iscsi
+        instance_id: iscsi-cluster
+        httpConnection:
+          protocol: https
+          host: tower.bigpri.me
+          port: 443
+          apiKey: ""
+          allowInsecure: false
+        zfs:
+          datasetParentName: storage/k8s-ds/v
+          detachedSnapshotsDatasetParentName: storage/k8s-ds/s
+        iscsi:
+          targetPortal: tower.bigpri.me:3260
+          targetGroups:
+            - targetGroupPortalGroup: 1
+              targetGroupInitiatorGroup: 2
+              targetGroupAuthType: None
+    storageClasses:
+      - name: iscsi
+        defaultClass: false
+        reclaimPolicy: Delete
+        volumeBindingMode: Immediate
+        allowVolumeExpansion: true
+        parameters:
+          fsType: ext4
+  valuesFrom:
+    - kind: Secret
+      name: truenas-api-credentials
+      valuesKey: apiKey
+      targetPath: driver.config.httpConnection.apiKey

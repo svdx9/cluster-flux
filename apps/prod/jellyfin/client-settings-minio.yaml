@@ -1,5 +1,5 @@
 ---
-apiVersion: gateway.nginx.org/v1alpha2
+apiVersion: gateway.nginx.org/v1alpha1
 kind: ClientSettingsPolicy
 metadata:
   name: jellyfin-minio-client-settings

@@ -5,6 +5,7 @@ resources:
   - secret-minio.sops.yaml
   - httproute.yaml
   - httproute-minio.yaml
+  - client-settings-minio.yaml
   - service-minio.yaml
   - repo.yaml
   - release.yaml

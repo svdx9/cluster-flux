@@ -1,0 +1,13 @@
+---
+apiVersion: gateway.nginx.org/v1alpha2
+kind: ClientSettingsPolicy
+metadata:
+  name: jellyfin-minio-client-settings
+  namespace: prod
+spec:
+  targetRef:
+    group: gateway.networking.k8s.io
+    kind: HTTPRoute
+    name: jellyfin-minio-route
+  body:
+    maxSize: 100m

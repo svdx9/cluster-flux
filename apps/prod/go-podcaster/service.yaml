@@ -1,0 +1,12 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: go-podcaster
+  namespace: prod
+spec:
+  selector:
+    app: go-podcaster
+  ports:
+    - port: 8080
+      targetPort: 8080

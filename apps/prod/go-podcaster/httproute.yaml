@@ -1,0 +1,20 @@
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: go-podcaster-route
+  namespace: prod
+spec:
+  parentRefs:
+    - name: shared-gateway
+      namespace: ingress-gateway
+  hostnames:
+    - "podcast.va1.uk"
+  rules:
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /
+      backendRefs:
+        - name: go-podcaster
+          port: 8080

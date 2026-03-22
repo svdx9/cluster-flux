@@ -1,0 +1,75 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: go-podcaster
+  namespace: prod
+  labels:
+    app: go-podcaster
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: go-podcaster
+  template:
+    metadata:
+      labels:
+        app: go-podcaster
+    spec:
+      containers:
+        - name: go-podcaster
+          image: ghcr.io/svdx9/go-podcaster:v0.0.1
+          ports:
+            - name: http
+              containerPort: 8080
+          env:
+            - name: HOST
+              value: "podcast.va1.uk"
+            - name: BASE_URL
+              value: "https://podcast.va1.uk"
+            - name: PORT
+              value: "8080"
+            - name: ENV
+              value: "production"
+            - name: LOG_LEVEL
+              value: "info"
+            - name: DB_PATH
+              value: "/data/podcast.db"
+            - name: UPLOAD_DIR
+              value: "/data/uploads"
+            - name: PODCAST_TITLE
+              value: "My Podcast"
+            - name: PODCAST_DESCRIPTION
+              value: "A great show"
+            - name: PODCAST_AUTHOR
+              value: "Podcaster"
+            - name: PODCAST_LANGUAGE
+              value: "en-us"
+            - name: PODCAST_CATEGORY
+              value: "Technology"
+          volumeMounts:
+            - name: data
+              mountPath: /data
+          readinessProbe:
+            httpGet:
+              path: /v1/episodes
+              port: 8080
+            initialDelaySeconds: 5
+            periodSeconds: 5
+          livenessProbe:
+            httpGet:
+              path: /v1/episodes
+              port: 8080
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              cpu: 500m
+              memory: 256Mi
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: go-podcaster-data

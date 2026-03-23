@@ -8,4 +8,5 @@ spec:
     group: gateway.networking.k8s.io
     kind: HTTPRoute
     name: go-podcaster-route
-  clientMaxBodySize: 100m
+  body:
+    maxSize: 100m

@@ -20,7 +20,7 @@ spec:
     spec:
       containers:
         - name: go-podcaster
-          image: ghcr.io/svdx9/go-podcaster:0.0.5
+          image: ghcr.io/svdx9/go-podcaster:0.0.6
           ports:
             - name: http
               containerPort: 8080

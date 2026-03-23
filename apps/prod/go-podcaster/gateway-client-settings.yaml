@@ -1,0 +1,11 @@
+apiVersion: nginx.org/v1alpha1
+kind: ClientSettingsPolicy
+metadata:
+  name: go-podcaster-upload
+  namespace: prod
+spec:
+  targetRef:
+    group: gateway.networking.k8s.io
+    kind: HTTPRoute
+    name: go-podcaster-route
+  clientMaxBodySize: 100m

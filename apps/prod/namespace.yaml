@@ -4,4 +4,7 @@ kind: Namespace
 metadata:
   name: prod
   labels:
-    gateway-access: shared  # permits shared-gateway (ingress-gateway ns) to route traffic into this namespace
+    gateway-access: shared # permits shared-gateway (ingress-gateway ns) to route traffic into this namespace
+    pod-security.kubernetes.io/enforce: privileged
+    pod-security.kubernetes.io/audit: privileged
+    pod-security.kubernetes.io/warn: privileged

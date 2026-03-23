@@ -1,4 +1,4 @@
-apiVersion: nginx.org/v1alpha1
+apiVersion: gateway.nginx.org/v1alpha1
 kind: ClientSettingsPolicy
 metadata:
   name: go-podcaster-upload

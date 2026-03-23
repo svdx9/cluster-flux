@@ -20,4 +20,8 @@ spec:
   targetNamespace: nginx-gateway
   install:
     createNamespace: true
-  values: {} # run with defaults for now
+  values:
+    nginxGateway:
+      config:
+        http:
+          clientMaxBodySize: 100m

@@ -9,7 +9,7 @@ spec:
     provider: sops
     secretRef:
       name: sops-age
-  interval: 10m0s
+  interval: 2m0s
   sourceRef:
     kind: GitRepository
     name: flux-system

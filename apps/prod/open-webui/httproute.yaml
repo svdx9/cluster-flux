@@ -17,4 +17,4 @@ spec:
             value: /
       backendRefs:
         - name: prod-open-webui
-          port: 8080
+          port: 80

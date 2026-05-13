@@ -36,5 +36,5 @@ spec:
             type: PathPrefix
             value: /
       backendRefs:
-        - name: prometheus-grafana
+        - name: prod-prometheus-grafana
           port: 80

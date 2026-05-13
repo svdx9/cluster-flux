@@ -68,18 +68,6 @@ spec:
       admin:
         existingSecret: prometheus-grafana-admin
         passwordKey: admin-password
-      datasources:
-        datasources.yaml:
-          apiVersion: 1
-          datasources:
-            - name: Prometheus
-              type: prometheus
-              url: http://prometheus-kube-prometheus-prometheus:9090
-              access: proxy
-              isDefault: true
-              basicAuth: true
-              basicAuthUser: grafana
-              basicAuthPassword: prometheus-grafana-pass
       persistence:
         enabled: true
         storageClassName: iscsi

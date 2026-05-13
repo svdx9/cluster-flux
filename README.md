@@ -168,7 +168,7 @@ Internet / Local Network
 
 ### ClusterIP
 
-A virtual IP reachable only from inside the cluster. Used for all app services (jellyfin, podinfo, k8s-mcp-server) — they are internal targets that the Gateway proxies to. Do not expose these directly.
+A virtual IP reachable only from inside the cluster. Used for all app services (podinfo, k8s-mcp-server) — they are internal targets that the Gateway proxies to. Do not expose these directly.
 
 ### LoadBalancer
 
@@ -191,21 +191,11 @@ Routing rules attached to a Gateway.
 
 ### Traffic flow example
 
-**Browser → `https://jellyfin.va1.uk`**
-
-```
-1. DNS resolves jellyfin.va1.uk → MetalLB IP (e.g. 10.7.0.248)
-2. TCP hits NGINX Gateway Fabric pod (via its LoadBalancer Service)
-3. NGINX terminates TLS using wildcard-va1-uk-tls
-4. NGINX checks HTTPRoutes → finds jellyfin.va1.uk → prod-jellyfin:8096
-5. Forwards to ClusterIP Service → Jellyfin pod
-```
-
 **S3 client → MinIO at `10.7.0.249:9000`**
 
 ```
 1. Client connects directly to MetalLB IP:9000
-2. Hits the jellyfin-minio LoadBalancer Service → Jellyfin pod port 9000
+2. Hits the LoadBalancer Service → pod port 9000
 ```
 
 ### Summary

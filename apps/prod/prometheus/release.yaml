@@ -17,13 +17,13 @@ spec:
   targetNamespace: prod
   postRenderers:
     - kustomize:
-        patchesJson6902:
+        patches:
           - target:
               group: apps
               version: v1
               kind: StatefulSet
               name: prometheus-kube-prometheus-prometheus
-            patch:
+            patch: |-
               - op: add
                 path: /spec/template/spec/containers/0/args/-
                 value: '--web.basic-auth.users=/etc/prometheus/basic-auth/prometheus-users'

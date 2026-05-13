@@ -16,11 +16,6 @@ spec:
         name: prometheus
         namespace: flux-system
   targetNamespace: prod
-  valuesFrom:
-    - kind: Secret
-      name: prometheus-grafana-admin
-      valuesKey: password
-      targetPath: grafana.adminPassword
   postRenderers:
     - kustomize:
         patches:
@@ -70,6 +65,9 @@ spec:
     grafana:
       enabled: true
       adminUser: admin
+      admin:
+        existingSecret: prometheus-grafana-admin
+        passwordKey: admin-password
       datasources:
         datasources.yaml:
           apiVersion: 1

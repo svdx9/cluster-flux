@@ -31,7 +31,7 @@ spec:
           - name: ISCSIADM_HOST_PATH
             value: /usr/local/sbin/iscsiadm
         iscsiDirHostPath: /etc/iscsi
-        iscsiDirHostPathType: ""
+        iscsiDirHostPathType: DirectoryOrCreate
     driver:
       config:
         driver: freenas-api-iscsi
@@ -45,12 +45,21 @@ spec:
         zfs:
           datasetParentName: storage/k8s-ds/v
           detachedSnapshotsDatasetParentName: storage/k8s-ds/s
+          zvolEnableReservation: false
         iscsi:
-          targetPortal: tower.bigpri.me:3260
+          targetPortal: 10.7.1.0:3260
           targetGroups:
             - targetGroupPortalGroup: 1
               targetGroupInitiatorGroup: 2
               targetGroupAuthType: None
+          namePrefix: csi-
+          nameSuffix: "-cluster"
+          extentInsecureTpc: true
+          extentXenCompat: false
+          extentDisablePhysicalBlocksize: true
+          extentBlocksize: 512
+          extentRpm: "SSD"
+          extentAvailThreshold: 0
     storageClasses:
       - name: iscsi
         defaultClass: false

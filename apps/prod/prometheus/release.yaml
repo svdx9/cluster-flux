@@ -66,6 +66,7 @@ spec:
       enabled: true
       deploymentStrategy:
         type: Recreate
+        rollingUpdate: null
       adminUser: admin
       admin:
         existingSecret: prometheus-grafana-admin

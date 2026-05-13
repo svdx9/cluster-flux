@@ -64,6 +64,8 @@ spec:
         podMonitorSelectorNilUsesHelmValues: false
     grafana:
       enabled: true
+      deploymentStrategy:
+        type: Recreate
       adminUser: admin
       admin:
         existingSecret: prometheus-grafana-admin

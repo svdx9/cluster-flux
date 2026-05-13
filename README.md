@@ -237,6 +237,109 @@ sops -d talos/controlplane.yaml | talosctl apply-config --nodes 10.7.2.10 --file
 
 See `talos/README.md` for upgrade and patch procedures.
 
+## PVC Troubleshooting
+
+PVCs are provisioned by democratic-csi, backed by TrueNAS iSCSI. Here are common issues and solutions:
+
+### Common Issues
+
+**Missing `storageClassName`**
+
+The storage class **must** be explicitly named `iscsi`. If you omit it or use a different name, Kubernetes won't know which storage backend to use.
+
+❌ Wrong:
+```yaml
+spec:
+  resources:
+    requests:
+      storage: 5Gi
+```
+
+✅ Correct:
+```yaml
+spec:
+  storageClassName: iscsi
+  resources:
+    requests:
+      storage: 5Gi
+```
+
+**Using wrong `accessModes`**
+
+Your cluster only supports `ReadWriteOnce` (single pod attachment). Using `ReadWriteMany` or `ReadOnlyMany` will cause the PVC to hang in `Pending`.
+
+❌ Wrong:
+```yaml
+accessModes:
+  - ReadWriteMany  # Not supported
+```
+
+✅ Correct:
+```yaml
+accessModes:
+  - ReadWriteOnce
+```
+
+**Deployment ordering issue**
+
+If you deploy an app before the storage controller is ready, the PVC provisioner won't be available. Verify the Flux dependency chain:
+
+```
+flux-system → infrastructure-controllers → infrastructure-configs → apps
+```
+
+Check status:
+```bash
+flux get all -A
+```
+
+The `democratic-csi-system` pods must be Running before apps try to create PVCs.
+
+**TrueNAS connectivity problems**
+
+The democratic-csi controller needs to reach TrueNAS at `tower.bigpri.me:443` and create iSCSI targets at port `3260`. Network issues, DNS resolution, or firewall rules can cause this to fail silently.
+
+Check controller logs:
+```bash
+kubectl logs -n democratic-csi-system deployment/democratic-csi-controller-iscsi -f
+```
+
+**Helm chart doesn't create PVC automatically**
+
+Some Helm charts don't include persistence by default. You may need to either:
+- Enable persistence in the HelmRelease values, OR
+- Create a separate `pvc.yaml` and mount it in the deployment
+
+Example Helm approach:
+```yaml
+persistence:
+  enabled: true
+  storageClass: iscsi
+  size: 10Gi
+```
+
+**Resource requests too large**
+
+Your TrueNAS ZFS pool might not have enough free space. Check your pool's available space. If you request 100Gi but only have 50Gi free, the PVC will stay `Pending`.
+
+### Debugging Steps
+
+Run these commands when a PVC isn't provisioning:
+
+```bash
+# Check PVC status
+kubectl describe pvc <name> -n <namespace>
+
+# Check provisioner logs
+kubectl logs -n democratic-csi-system deployment/democratic-csi-controller-iscsi -f
+
+# Verify storage class exists
+kubectl get storageclass
+
+# Check TrueNAS connectivity from controller pod
+kubectl exec -it -n democratic-csi-system deployment/democratic-csi-controller-iscsi -- bash
+```
+
 ## Flux quick reference
 
 ```bash

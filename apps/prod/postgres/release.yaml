@@ -1,0 +1,90 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: postgres
+  namespace: flux-system
+spec:
+  interval: 30m
+  chart:
+    spec:
+      chart: postgresql
+      version: "16.x"
+      sourceRef:
+        kind: HelmRepository
+        name: bitnami
+        namespace: flux-system
+      interval: 12h
+  values:
+    image:
+      registry: docker.io
+      repository: pgvector/pgvector
+      tag: pg17
+      pullPolicy: IfNotPresent
+
+    primary:
+      podSecurityContext:
+        enabled: true
+        fsGroup: 999
+        runAsUser: 999
+        runAsGroup: 999
+
+      containerSecurityContext:
+        enabled: true
+        runAsUser: 999
+        runAsNonRoot: true
+        allowPrivilegeEscalation: false
+        seccompProfile:
+          type: RuntimeDefault
+        capabilities:
+          drop:
+            - ALL
+
+      initdb:
+        scripts:
+          init-vector.sql: |
+            CREATE EXTENSION IF NOT EXISTS vector;
+
+      persistence:
+        enabled: true
+        storageClass: iscsi
+        accessModes:
+          - ReadWriteOnce
+        size: 50Gi
+
+      resources:
+        requests:
+          cpu: 250m
+          memory: 256Mi
+        limits:
+          cpu: 1000m
+          memory: 1Gi
+
+    auth:
+      database: postgres
+      existingSecret: postgres-credentials
+      secretKeys:
+        adminPasswordKey: postgres-password
+
+    tls:
+      enabled: true
+      certificatesSecret: postgres-tls
+      certFilename: tls.crt
+      certKeyFilename: tls.key
+      certCAFilename: ca.crt
+
+    service:
+      type: ClusterIP
+      ports:
+        postgresql: 5432
+
+    readReplicas:
+      replicaCount: 0
+
+    metrics:
+      enabled: false
+
+    volumePermissions:
+      enabled: true
+      securityContext:
+        runAsUser: "0"

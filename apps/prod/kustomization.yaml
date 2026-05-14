@@ -8,6 +8,7 @@ resources:
   - go-podcaster
   - open-webui
   - prometheus
+  - postgres
 
 patches:
   - patch: |-

@@ -20,4 +20,6 @@ spec:
   targetNamespace: nginx-gateway
   install:
     createNamespace: true
-  values: {}
+  values:
+    gwAPIExperimentalFeatures:
+      enable: true

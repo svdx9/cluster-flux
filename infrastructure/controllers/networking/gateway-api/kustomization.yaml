@@ -4,3 +4,4 @@ kind: Kustomization
 resources:
   # Reference the specific version in the subdirectory
   - v1.4.1/standard-install.yaml
+  - v1.4.1/experimental-install.yaml

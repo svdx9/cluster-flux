@@ -1,0 +1,52 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: pgadmin
+  namespace: flux-system
+spec:
+  interval: 30m
+  chart:
+    spec:
+      chart: pgadmin4
+      version: "1.x"
+      sourceRef:
+        kind: HelmRepository
+        name: runix
+        namespace: flux-system
+      interval: 12h
+  values:
+    env:
+      email: ""
+      password: ""
+    envVarsFromSecrets:
+      - pgadmin-credentials
+    ingress:
+      enabled: false
+    service:
+      type: ClusterIP
+      port: 80
+    persistentVolume:
+      enabled: true
+      size: 2Gi
+      storageClass: iscsi
+      accessModes:
+        - ReadWriteOnce
+    podSecurityContext:
+      fsGroup: 5050
+      runAsUser: 5050
+      runAsNonRoot: true
+    containerSecurityContext:
+      allowPrivilegeEscalation: false
+      capabilities:
+        drop:
+          - ALL
+      seccompProfile:
+        type: RuntimeDefault
+    resources:
+      requests:
+        cpu: 100m
+        memory: 128Mi
+      limits:
+        cpu: 500m
+        memory: 512Mi

@@ -29,17 +29,7 @@ spec:
       modules:
         if_mib:
           walk:
-            - ifDescr
-            - ifType
-            - ifSpeed
-            - ifAdminStatus
-            - ifOperStatus
-            - ifHCInOctets
-            - ifHCOutOctets
-            - ifInErrors
-            - ifOutErrors
-            - ifInDiscards
-            - ifOutDiscards
+            - sysUpTime
 
     extraArgs: ["--config.expand-environment-variables"]
     envFrom:

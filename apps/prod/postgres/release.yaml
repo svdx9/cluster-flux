@@ -9,17 +9,21 @@ spec:
   chart:
     spec:
       chart: postgresql
-      version: "16.x"
+      version: "18.x"
       sourceRef:
         kind: HelmRepository
         name: bitnami
         namespace: flux-system
       interval: 12h
   values:
+    global:
+      security:
+        allowInsecureImages: true
+
     image:
       registry: docker.io
       repository: pgvector/pgvector
-      tag: pg17
+      tag: pg18
       pullPolicy: IfNotPresent
 
     primary:

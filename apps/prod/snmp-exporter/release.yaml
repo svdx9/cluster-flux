@@ -27,47 +27,29 @@ spec:
           priv_protocol: AES
           priv_password: ${OPNSENSE_SNMPV3_KEY}
       modules:
-        opnsense:
+        if_mib:
           walk:
-            - 1.3.6.1.2.1.1      # system (sysDescr, sysUpTime)
-            - 1.3.6.1.2.1.2      # IF-MIB interfaces table
-            - 1.3.6.1.2.1.31     # IF-MIB ifXTable (high-speed counters)
-            - 1.3.6.1.2.1.25.1   # hrSystem (uptime, numProcesses)
-            - 1.3.6.1.2.1.25.2   # hrStorage (memory, disk)
-            - 1.3.6.1.2.1.6.13   # TCP connections
-            - 1.3.6.1.2.1.7.5    # UDP stats
-          max_repetitions: 25
-          retries: 3
-          timeout: 10s
-    extraArgs:
-      - --config.expand-environment-variables
+            - ifDescr
+            - ifType
+            - ifSpeed
+            - ifAdminStatus
+            - ifOperStatus
+            - ifHCInOctets
+            - ifHCOutOctets
+            - ifInErrors
+            - ifOutErrors
+            - ifInDiscards
+            - ifOutDiscards
+
+    extraArgs: ["--config.expand-environment-variables"]
     envFrom:
       - secretRef:
           name: snmp-exporter-credentials
+
     serviceMonitor:
-      enabled: false
-    extraManifests:
-      - |
-        apiVersion: monitoring.coreos.com/v1
-        kind: ServiceMonitor
-        metadata:
-          name: snmp-opnsense
-          namespace: prod
-        spec:
-          selector:
-            matchLabels:
-              app.kubernetes.io/name: prometheus-snmp-exporter
-          endpoints:
-            - port: http
-              path: /snmp
-              params:
-                auth: [opnsense_auth]
-                module: [opnsense]
-                target: ["10.7.0.2"]
-              interval: 60s
-              scrapeTimeout: 30s
-              relabelings:
-                - sourceLabels: [__param_target]
-                  targetLabel: instance
-                - targetLabel: __address__
-                  replacement: prod-snmp-exporter-prometheus-snmp-exporter:9116
+      enabled: true
+      params:
+        - name: opnsense-firewall
+          target: 10.7.0.2
+          module: [if_mib]
+          auth: [opnsense_auth]

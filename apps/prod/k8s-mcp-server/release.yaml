@@ -23,3 +23,7 @@ spec:
           roleRef:
             name: view
             external: true
+        - name: use-crd-reader
+          roleRef:
+            name: k8s-mcp-crd-reader
+            external: true

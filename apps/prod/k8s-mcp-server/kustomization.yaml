@@ -5,3 +5,4 @@ resources:
   - repo.yaml
   - release.yaml
   - httproute.yaml
+  - rbac.yaml

@@ -9,6 +9,7 @@ resources:
   - open-webui
   - prometheus
   - postgres
+  - pgadmin
 
 patches:
   - patch: |-

@@ -19,6 +19,7 @@ spec:
     config: |
       auths:
         opnsense_auth:
+          version: 3
           security_level: authPriv
           username: opnx
           password: ${OPNSENSE_SNMPV3_PASS}

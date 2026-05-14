@@ -21,5 +21,6 @@ spec:
   install:
     createNamespace: true
   values:
-    gwAPIExperimentalFeatures:
-      enable: true
+    nginxGateway:
+      gwAPIExperimentalFeatures:
+        enable: true

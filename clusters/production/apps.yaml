@@ -16,6 +16,7 @@ spec:
   path: ./apps
   prune: true
   wait: true
+  timeout: 5m
   # This ensures apps don't deploy until infra is healthy
   dependsOn:
     - name: infrastructure-configs

@@ -1,0 +1,15 @@
+---
+apiVersion: gateway.networking.k8s.io/v1alpha2
+kind: TCPRoute
+metadata:
+  name: postgres-route
+  namespace: prod
+spec:
+  parentRefs:
+    - name: shared-gateway
+      namespace: ingress-gateway
+      sectionName: postgres
+  rules:
+    - backendRefs:
+        - name: prod-postgres-postgresql
+          port: 5432

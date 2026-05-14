@@ -72,11 +72,7 @@ spec:
         adminPasswordKey: postgres-password
 
     tls:
-      enabled: true
-      certificatesSecret: postgres-tls
-      certFilename: tls.crt
-      certKeyFilename: tls.key
-      certCAFilename: ca.crt
+      enabled: false
 
     service:
       type: ClusterIP

@@ -16,8 +16,11 @@ spec:
         namespace: flux-system
       interval: 12h
   values:
-    envVarsFromSecrets:
-      - pgadmin-credentials
+    env:
+      email: stevie.vallois.davies@gmail.com
+    existingSecret: pgadmin-credentials
+    secretKeys:
+      pgadminPasswordKey: pgadmin_pw
     ingress:
       enabled: false
     service:
@@ -40,6 +43,10 @@ spec:
           - ALL
       seccompProfile:
         type: RuntimeDefault
+    startupProbe:
+      failureThreshold: 30
+      periodSeconds: 10
+
     resources:
       requests:
         cpu: 100m

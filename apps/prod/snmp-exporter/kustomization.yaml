@@ -4,3 +4,4 @@ kind: Kustomization
 resources:
   - credentials.sops.yaml
   - release.yaml
+  - httproute.yaml

@@ -28,6 +28,7 @@ spec:
           priv_password: ${OPNSENSE_SNMPV3_KEY}
       modules:
         opnsense:
+          auth: opnsense_auth
           walk:
             - 1.3.6.1.2.1.1      # system (sysDescr, sysUpTime)
             - 1.3.6.1.2.1.2      # IF-MIB interfaces table

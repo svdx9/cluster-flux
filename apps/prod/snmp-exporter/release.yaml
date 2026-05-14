@@ -12,8 +12,8 @@ spec:
       version: "9.14.0"
       sourceRef:
         kind: HelmRepository
-        name: prometheus-community
-        namespace: prod
+        name: prometheus
+        namespace: flux-system
       interval: 30m
   values:
     existingConfigMap: snmp-exporter-config

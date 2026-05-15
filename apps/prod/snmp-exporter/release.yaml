@@ -27,9 +27,14 @@ spec:
           priv_protocol: AES
           priv_password: ${OPNSENSE_SNMPV3_KEY}
       modules:
-        if_mib:
+        opnsense:
           walk:
-            - sysUpTime
+            - 1.3.6.1.2.1.1.3
+          metrics:
+            - name: sysUpTime
+              oid: 1.3.6.1.2.1.1.3.0
+              type: gauge
+              help: Seconds since last reboot
 
     extraArgs: ["--config.expand-environment-variables"]
     envFrom:
@@ -41,5 +46,5 @@ spec:
       params:
         - name: opnsense-firewall
           target: 10.7.0.2
-          module: [if_mib]
+          module: [opnsense]
           auth: [opnsense_auth]

@@ -27,8 +27,11 @@ jobs:
 
       - name: Inject config into HelmRelease
         run: |
+          CHECKSUM=$(sha256sum snmp-generator/output/snmp.yaml | awk '{print $1}')
           GENERATED=$(cat snmp-generator/output/snmp.yaml) \
             yq e '.spec.values.config = strenv(GENERATED)' \
+            -i apps/prod/snmp-exporter/release.yaml
+          yq e ".spec.values.podAnnotations[\"checksum/snmp-config\"] = \"$CHECKSUM\"" \
             -i apps/prod/snmp-exporter/release.yaml
 
       - name: Commit if changed

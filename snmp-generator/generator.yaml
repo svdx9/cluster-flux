@@ -1,0 +1,20 @@
+---
+auths:
+  opnsense_auth:
+    version: 3
+    security_level: authPriv
+    username: opnx
+    password: ${OPNSENSE_SNMPV3_PASS}
+    auth_protocol: SHA
+    priv_protocol: AES
+    priv_password: ${OPNSENSE_SNMPV3_KEY}
+modules:
+  opnsense:
+    walk:
+      - "HOST-RESOURCES-MIB::host"
+      - "IF-MIB::interfaces"
+      - "OPENBSD-BASE-MIB::openBSD"
+  zyxel:
+    walk:
+      - "HOST-RESOURCES-MIB::host"
+      - "IF-MIB::interfaces"

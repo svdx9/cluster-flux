@@ -1,0 +1,42 @@
+name: Regenerate SNMP config
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "snmp-generator/**"
+  workflow_dispatch:
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Install yq
+        run: |
+          wget -qO /usr/local/bin/yq https://github.com/mikefarah/yq/releases/download/v4.53.2/yq_linux_amd64
+          chmod +x /usr/local/bin/yq
+
+      - name: Generate snmp config
+        working-directory: snmp-generator
+        run: make generate
+
+      - name: Inject config into HelmRelease
+        run: |
+          GENERATED=$(cat snmp-generator/output/snmp.yaml) \
+            yq e '.spec.values.config = strenv(GENERATED)' \
+            -i apps/prod/snmp-exporter/release.yaml
+
+      - name: Commit if changed
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git diff --quiet apps/prod/snmp-exporter/release.yaml || (
+            git add apps/prod/snmp-exporter/release.yaml &&
+            git commit -m "chore: regenerate snmp config" &&
+            git push
+          )

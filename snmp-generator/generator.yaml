@@ -14,6 +14,11 @@ modules:
       - "HOST-RESOURCES-MIB::host"
       - "IF-MIB::interfaces"
       - "OPENBSD-BASE-MIB::openBSD"
+    lookups:
+      - source_indexes: [ifIndex]
+        lookup: ifAlias
+      - source_indexes: [ifIndex]
+        lookup: ifDescr
   zyxel:
     walk:
       - "HOST-RESOURCES-MIB::host"

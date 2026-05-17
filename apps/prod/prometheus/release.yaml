@@ -62,6 +62,10 @@ spec:
             memory: 4Gi
         serviceMonitorSelectorNilUsesHelmValues: false
         podMonitorSelectorNilUsesHelmValues: false
+        additionalScrapeConfigs:
+          - job_name: nixos-bigpri-me
+            static_configs:
+              - targets: ['nixos.bigpri.me:9273']
     grafana:
       enabled: true
       deploymentStrategy:

@@ -26,5 +26,10 @@ spec:
       type: ClusterIP
       port: 8000
     debug: true
+    extraArgs:
+      - -transport
+      - streamable-http
+      - -endpoint-path
+      - /mcp
     ingress:
       enabled: false

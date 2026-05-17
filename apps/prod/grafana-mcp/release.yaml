@@ -1,0 +1,29 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: grafana-mcp
+  namespace: flux-system
+spec:
+  interval: 30m
+  chart:
+    spec:
+      chart: grafana-mcp
+      version: "0.15.1"
+      sourceRef:
+        kind: HelmRepository
+        name: grafana-community
+        namespace: flux-system
+      interval: 12h
+  values:
+    grafana:
+      url: "http://prod-prometheus-grafana.prod.svc.cluster.local"
+      apiKeySecret:
+        name: grafana-mcp-credentials
+        key: GRAFANA_API_KEY
+    service:
+      enabled: true
+      type: ClusterIP
+      port: 8000
+    ingress:
+      enabled: false

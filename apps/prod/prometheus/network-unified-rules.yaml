@@ -1,0 +1,41 @@
+---
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: network-unified
+  namespace: prod
+  labels:
+    release: prod-prometheus
+spec:
+  groups:
+    - name: network.unified
+      rules:
+        - record: network_receive_bytes_total
+          expr: node_network_receive_bytes_total
+        - record: network_receive_bytes_total
+          expr: label_replace(ifInOctets, "device", "$1", "ifDescr", "(.*)")
+
+        - record: network_transmit_bytes_total
+          expr: node_network_transmit_bytes_total
+        - record: network_transmit_bytes_total
+          expr: label_replace(ifOutOctets, "device", "$1", "ifDescr", "(.*)")
+
+        - record: network_receive_drop_total
+          expr: node_network_receive_drop_total
+        - record: network_receive_drop_total
+          expr: label_replace(ifInDiscards, "device", "$1", "ifDescr", "(.*)")
+
+        - record: network_transmit_drop_total
+          expr: node_network_transmit_drop_total
+        - record: network_transmit_drop_total
+          expr: label_replace(ifOutDiscards, "device", "$1", "ifDescr", "(.*)")
+
+        - record: network_receive_errs_total
+          expr: node_network_receive_errs_total
+        - record: network_receive_errs_total
+          expr: label_replace(ifInErrors, "device", "$1", "ifDescr", "(.*)")
+
+        - record: network_transmit_errs_total
+          expr: node_network_transmit_errs_total
+        - record: network_transmit_errs_total
+          expr: label_replace(ifOutErrors, "device", "$1", "ifDescr", "(.*)")

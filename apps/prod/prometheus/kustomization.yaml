@@ -6,4 +6,5 @@ resources:
   - grafana-db-credentials.sops.yaml
   - httproute.yaml
   - repo.yaml
+  - network-unified-rules.yaml
   - release.yaml

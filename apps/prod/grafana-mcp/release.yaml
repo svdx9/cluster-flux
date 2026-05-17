@@ -25,7 +25,6 @@ spec:
       enabled: true
       type: ClusterIP
       port: 8000
-    debug: true
     extraArgs:
       - -transport
       - streamable-http

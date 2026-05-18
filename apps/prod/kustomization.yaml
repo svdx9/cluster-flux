@@ -12,6 +12,7 @@ resources:
   - pgadmin
   - snmp-exporter
   - grafana-mcp
+  - searxng
 
 patches:
   - patch: |-

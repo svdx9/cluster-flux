@@ -3405,7 +3405,7 @@ spec:
           target: 10.7.0.2
           module: [system, host, if_mib, opnsense]
           auth: [opnsense_auth]
-        - name: toweer
+        - name: tower
           target: 10.7.1.0
           module: [system, host, if_mib, truenas]
           auth: [truenas_auth]

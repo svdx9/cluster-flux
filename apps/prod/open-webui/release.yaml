@@ -66,22 +66,6 @@ spec:
         value: "true"
       - name: DEFAULT_USER_ROLE
         value: "user"
-      # Disable local embedding model download (uses Ollama for RAG embeddings)
-      - name: RAG_EMBEDDING_ENGINE
-        value: "ollama"
-      - name: RAG_EMBEDDING_MODEL
-        value: "nomic-embed-text"
-      - name: RAG_EMBEDDING_MODEL_AUTO_UPDATE
-        value: "false"
-      - name: RAG_RERANKING_MODEL
-        value: ""
-      - name: RAG_RERANKING_MODEL_AUTO_UPDATE
-        value: "false"
-      # Disable local Whisper STT model download
-      - name: AUDIO_STT_ENGINE
-        value: "openai"
-      - name: WHISPER_MODEL_AUTO_UPDATE
-        value: "false"
       # Skip first-boot model warmup
       - name: OFFLINE_MODE
         value: "true"

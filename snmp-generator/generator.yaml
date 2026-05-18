@@ -8,18 +8,50 @@ auths:
     auth_protocol: SHA
     priv_protocol: AES
     priv_password: ${OPNSENSE_SNMPV3_KEY}
+  truenas_auth:
+    version: 3
+    security_level: authPriv
+    username: tower
+    password: ${TRUENAS_SNMPV3_PASS}
+    auth_protocol: SHA
+    priv_protocol: AES
+    priv_password: ${TRUENAS_SNMPV3_KEY}
 modules:
-  opnsense:
+  system:
+    walk:
+      - "SNMPv2-MIB::system"
+    lookups:
+      - source_indexes: [sysORIndex]
+        lookup: "SNMPv2-MIB::sysORDescr"
+  host:
     walk:
       - "HOST-RESOURCES-MIB::host"
+
+  if_mib:
+    walk:
       - "IF-MIB::interfaces"
-      - "OPENBSD-BASE-MIB::openBSD"
+      - "IF-MIB::ifXTable"
     lookups:
       - source_indexes: [ifIndex]
-        lookup: ifAlias
+        lookup: "IF-MIB::ifAlias"
       - source_indexes: [ifIndex]
-        lookup: ifDescr
-  zyxel:
+        # Disambiguate from PaloAlto PAN-COMMON-MIB::ifDescr.
+        lookup: "IF-MIB::ifDescr"
+      - source_indexes: [ifIndex]
+        # Disambiguate from Netscaler NS-ROOT-MIB::ifName.
+        lookup: "IF-MIB::ifName"
+    overrides:
+      ifAlias:
+        ignore: true # Lookup metric
+      ifDescr:
+        ignore: true # Lookup metric
+      ifName:
+        ignore: true # Lookup metric
+      ifType:
+        type: EnumAsInfo
+  opnsense:
     walk:
-      - "HOST-RESOURCES-MIB::host"
-      - "IF-MIB::interfaces"
+      - "OPENBSD-BASE-MIB::openBSD"
+  truenas:
+    walk:
+      - "TRUENAS-MIB::trueNas"

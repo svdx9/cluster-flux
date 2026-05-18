@@ -3511,7 +3511,11 @@ spec:
       params:
         - name: opnsense-firewall
           target: 10.7.0.2
-          module: [opnsense]
+          module: [system, host, if_mib, opnsense]
           auth: [opnsense_auth]
+        - name: toweer
+          target: 10.7.1.0
+          module: [system, host, if_mib, truenas]
+          auth: [truenas_auth]
     podAnnotations:
       checksum/snmp-config: b3fef125aa1830daab06d687c4d45f1806c80ce76e0a1c91466439651744f44b

@@ -11,6 +11,7 @@ generate:
 		-g /opt/generator.yaml \
 		-m /opt/mibs/shared \
 		-m /opt/mibs/openbsd \
+		-m /opt/mibs/truenas \
 		-m /opt/mibs/zyxel \
 		-o /opt/output/snmp.yaml \
 		--no-fail-on-parse-errors \

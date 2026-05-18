@@ -57,6 +57,11 @@ spec:
           secretKeyRef:
             name: openwebui-credentials
             key: WEBUI_SECRET_KEY
+      - name: DATABASE_URL
+        valueFrom:
+          secretKeyRef:
+            name: openwebui-db-credentials
+            key: DATABASE_URL
       - name: ENABLE_DB_MIGRATIONS
         value: "true"
       - name: DEFAULT_USER_ROLE

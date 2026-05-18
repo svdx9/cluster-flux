@@ -44,13 +44,13 @@ spec:
               mountPath: /etc/nut/upsmon.conf
               subPath: upsmon.conf
               readOnly: true
-            - name: sysrq
-              mountPath: /proc/sysrq-trigger
+            - name: host-proc
+              mountPath: /host-proc
       volumes:
         - name: nut-config
           secret:
             secretName: nut-monitor-config
             defaultMode: 420
-        - name: sysrq
+        - name: host-proc
           hostPath:
-            path: /proc/sysrq-trigger
+            path: /proc

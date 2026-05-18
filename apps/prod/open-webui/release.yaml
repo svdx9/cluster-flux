@@ -19,8 +19,6 @@ spec:
     replicaCount: 1
     ollama:
       enabled: false
-    ollamaUrls:
-      - http://10.7.2.0:11434
     pipelines:
       enabled: false
     ingress:

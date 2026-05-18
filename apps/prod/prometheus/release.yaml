@@ -43,6 +43,7 @@ spec:
   values:
     prometheus:
       prometheusSpec:
+        enableAdminAPI: true
         retention: 30d
         storageSpec:
           volumeClaimTemplate:
@@ -65,7 +66,7 @@ spec:
         additionalScrapeConfigs:
           - job_name: nixos-bigpri-me
             static_configs:
-              - targets: ['nixos.bigpri.me:9273']
+              - targets: ["nixos.bigpri.me:9273"]
     grafana:
       enabled: true
       deploymentStrategy:

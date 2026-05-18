@@ -1,0 +1,52 @@
+---
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: nut-monitor
+  namespace: kube-system
+  labels:
+    k8s-app: nut-monitor
+    tier: node
+spec:
+  selector:
+    matchLabels:
+      k8s-app: nut-monitor
+      tier: node
+  updateStrategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 0
+      maxUnavailable: 1
+  template:
+    metadata:
+      labels:
+        k8s-app: nut-monitor
+        tier: node
+    spec:
+      hostNetwork: true
+      priorityClassName: system-node-critical
+      tolerations:
+        - effect: NoSchedule
+          operator: Exists
+        - effect: NoExecute
+          operator: Exists
+      containers:
+        - name: nut-monitor
+          image: ghcr.io/instantlinux/nut-client:latest
+          securityContext:
+            privileged: true
+          volumeMounts:
+            - name: nut-config
+              mountPath: /etc/nut/upsmon.conf
+              subPath: upsmon.conf
+              readOnly: true
+            - name: sysrq
+              mountPath: /proc/sysrq-trigger
+      volumes:
+        - name: nut-config
+          secret:
+            secretName: nut-monitor-config
+            defaultMode: 420
+        - name: sysrq
+          hostPath:
+            path: /proc/sysrq-trigger

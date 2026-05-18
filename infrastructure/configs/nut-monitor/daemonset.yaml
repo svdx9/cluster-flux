@@ -32,7 +32,7 @@ spec:
           operator: Exists
       containers:
         - name: nut-monitor
-          image: ghcr.io/instantlinux/nut-client:latest
+          image: instantlinux/nut-client:latest
           securityContext:
             privileged: true
           volumeMounts:

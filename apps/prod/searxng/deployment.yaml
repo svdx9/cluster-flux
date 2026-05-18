@@ -16,9 +16,19 @@ spec:
       labels:
         app: searxng
     spec:
+      enableServiceLinks: false
+      initContainers:
+        - name: copy-config
+          image: docker.io/searxng/searxng:2026.5.17-d7e8b7cd1
+          command: ["cp", "/searxng-config/settings.yml", "/etc/searxng/settings.yml"]
+          volumeMounts:
+            - name: config-source
+              mountPath: /searxng-config
+            - name: config-dir
+              mountPath: /etc/searxng
       containers:
         - name: searxng
-          image: docker.io/searxng/searxng:latest
+          image: docker.io/searxng/searxng:2026.5.17-d7e8b7cd1
           ports:
             - name: http
               containerPort: 8080
@@ -29,9 +39,8 @@ spec:
                   name: searxng-secret
                   key: secret-key
           volumeMounts:
-            - name: config
-              mountPath: /etc/searxng/settings.yml
-              subPath: settings.yml
+            - name: config-dir
+              mountPath: /etc/searxng
           readinessProbe:
             httpGet:
               path: /
@@ -52,6 +61,8 @@ spec:
               cpu: 500m
               memory: 512Mi
       volumes:
-        - name: config
+        - name: config-source
           configMap:
             name: searxng-config
+        - name: config-dir
+          emptyDir: {}

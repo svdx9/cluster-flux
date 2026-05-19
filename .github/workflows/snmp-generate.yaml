@@ -26,11 +26,10 @@ jobs:
         working-directory: snmp-generator
         run: make generate
 
-      - name: Inject config into HelmRelease
+      - name: Update snmp config file
         run: |
           CHECKSUM=$(sha256sum snmp-generator/output/snmp.yaml | awk '{print $1}')
-          yq e '.spec.values.config = load("snmp-generator/output/snmp.yaml")' \
-            -i apps/prod/snmp-exporter/release.yaml
+          cp snmp-generator/output/snmp.yaml apps/prod/snmp-exporter/snmp.yaml
           yq e ".spec.values.podAnnotations[\"checksum/snmp-config\"] = \"$CHECKSUM\"" \
             -i apps/prod/snmp-exporter/release.yaml
 
@@ -38,8 +37,8 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git diff --quiet apps/prod/snmp-exporter/release.yaml || (
-            git add apps/prod/snmp-exporter/release.yaml &&
+          git diff --quiet apps/prod/snmp-exporter/ || (
+            git add apps/prod/snmp-exporter/ &&
             git commit -m "chore: regenerate snmp config" &&
             git push
           )

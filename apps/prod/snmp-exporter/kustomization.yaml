@@ -5,3 +5,9 @@ resources:
   - credentials.sops.yaml
   - release.yaml
   - httproute.yaml
+configMapGenerator:
+  - name: snmp-exporter-config
+    files:
+      - snmp.yaml
+    options:
+      disableNameSuffixHash: true

@@ -18,6 +18,9 @@ modules:
   host:
     walk:
       - "HOST-RESOURCES-MIB::host"
+      - "UCD-SNMP-MIB::ucdavis"
+      - "UCD-DISKIO-MIB::ucdDiskIOMIB"
+      - "ENTITY-SENSOR-MIB::entitySensorObjects"
     lookups:
       - source_indexes: [hrStorageIndex]
         lookup: "HOST-RESOURCES-MIB::hrStorageDescr"

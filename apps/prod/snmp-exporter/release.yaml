@@ -62,7 +62,7 @@ spec:
           targetLabel: hrStorageType
           replacement: networkDisk
     podAnnotations:
-      checksum/snmp-config: 5fd711a43b66d58a59752784442643b42a2b343b521cb372d81bdcc1bc914e55
+      checksum/snmp-config: ff2a7dbb73a39423c95ed9919044deb723fe64010e794e43fea746b6342737fe
     extraConfigmapMounts:
       - name: snmp-exporter-config
         mountPath: /config/snmp.yaml

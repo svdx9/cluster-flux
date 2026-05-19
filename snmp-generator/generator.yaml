@@ -1,21 +1,13 @@
 ---
 auths:
-  opnsense_auth:
+  snmp_user:
     version: 3
     security_level: authPriv
-    username: opnx
-    password: ${OPNSENSE_SNMPV3_PASS}
+    username: snmp_exporter
+    password: ${SNMPV3_PASS}
     auth_protocol: SHA
     priv_protocol: AES
-    priv_password: ${OPNSENSE_SNMPV3_KEY}
-  truenas_auth:
-    version: 3
-    security_level: authPriv
-    username: tower
-    password: ${TRUENAS_SNMPV3_PASS}
-    auth_protocol: SHA
-    priv_protocol: AES
-    priv_password: ${TRUENAS_SNMPV3_KEY}
+    priv_password: ${SNMPV3_KEY}
 modules:
   system:
     walk:
@@ -26,6 +18,24 @@ modules:
   host:
     walk:
       - "HOST-RESOURCES-MIB::host"
+    lookups:
+      - source_indexes: [hrStorageIndex]
+        lookup: "HOST-RESOURCES-MIB::hrStorageDescr"
+      - source_indexes: [hrStorageIndex]
+        lookup: "HOST-RESOURCES-MIB::hrStorageType"
+      - source_indexes: [hrDeviceIndex]
+        lookup: "HOST-RESOURCES-MIB::hrDeviceDescr"
+      - source_indexes: [hrFSIndex]
+        lookup: "HOST-RESOURCES-MIB::hrFSMountPoint"
+    overrides:
+      hrStorageDescr:
+        ignore: true # Lookup label
+      hrStorageType:
+        ignore: true # Lookup label
+      hrDeviceDescr:
+        ignore: true # Lookup label
+      hrFSMountPoint:
+        ignore: true # Lookup label
 
   if_mib:
     walk:

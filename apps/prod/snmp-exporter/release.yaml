@@ -3404,10 +3404,39 @@ spec:
         - name: opnsense-firewall
           target: 10.7.0.2
           module: [system, host, if_mib, opnsense]
-          auth: [opnsense_auth]
+          auth: [snmp_user]
         - name: tower
           target: 10.7.1.0
           module: [system, host, if_mib, truenas]
-          auth: [truenas_auth]
+          auth: [snmp_user]
+      metricRelabelings:
+        - sourceLabels: [hrStorageType]
+          regex: '1\.3\.6\.1\.2\.1\.25\.2\.1\.1'
+          targetLabel: hrStorageType
+          replacement: other
+        - sourceLabels: [hrStorageType]
+          regex: '1\.3\.6\.1\.2\.1\.25\.2\.1\.2'
+          targetLabel: hrStorageType
+          replacement: ram
+        - sourceLabels: [hrStorageType]
+          regex: '1\.3\.6\.1\.2\.1\.25\.2\.1\.3'
+          targetLabel: hrStorageType
+          replacement: virtualMemory
+        - sourceLabels: [hrStorageType]
+          regex: '1\.3\.6\.1\.2\.1\.25\.2\.1\.4'
+          targetLabel: hrStorageType
+          replacement: fixedDisk
+        - sourceLabels: [hrStorageType]
+          regex: '1\.3\.6\.1\.2\.1\.25\.2\.1\.5'
+          targetLabel: hrStorageType
+          replacement: removableDisk
+        - sourceLabels: [hrStorageType]
+          regex: '1\.3\.6\.1\.2\.1\.25\.2\.1\.9'
+          targetLabel: hrStorageType
+          replacement: flashMemory
+        - sourceLabels: [hrStorageType]
+          regex: '1\.3\.6\.1\.2\.1\.25\.2\.1\.10'
+          targetLabel: hrStorageType
+          replacement: networkDisk
     podAnnotations:
       checksum/snmp-config: eb0306853d13e25175f74aa1fa76b6c134880fbac219880b513eba36a236199b

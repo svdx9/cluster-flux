@@ -12,16 +12,17 @@ modules:
   system:
     walk:
       - "SNMPv2-MIB::system"
+      - "HOST-RESOURCES-MIB::hrStorage"
+      - "HOST-RESOURCES-MIB::hrDevice"
+      - "UCD-SNMP-MIB::ucdavis"
+      - "UCD-DISKIO-MIB::ucdDiskIOMIB"
+      - "ENTITY-MIB::entPhysicalTable"
+      - "ENTITY-STATE-MIB::entStateTable"
+      - "ENTITY-SENSOR-MIB::entitySensorObjects"
+      - "LM-SENSORS-MIB::lmSensorsMIB"
     lookups:
       - source_indexes: [sysORIndex]
         lookup: "SNMPv2-MIB::sysORDescr"
-  host:
-    walk:
-      - "HOST-RESOURCES-MIB::host"
-      - "UCD-SNMP-MIB::ucdavis"
-      - "UCD-DISKIO-MIB::ucdDiskIOMIB"
-      - "ENTITY-SENSOR-MIB::entitySensorObjects"
-    lookups:
       - source_indexes: [hrStorageIndex]
         lookup: "HOST-RESOURCES-MIB::hrStorageDescr"
       - source_indexes: [hrStorageIndex]

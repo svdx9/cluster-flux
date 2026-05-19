@@ -4,6 +4,7 @@ on:
   push:
     branches: [main]
     paths:
+      - ".github/workflows/snmp-generate.yaml"
       - "snmp-generator/**"
   workflow_dispatch:
 

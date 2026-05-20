@@ -17,8 +17,7 @@ spec:
       interval: 30m
   values:
     config: ""
-    extraArgs:
-      [--config.expand-environment-variables, --config.file=/config/snmp.yaml]
+    extraArgs: [--config.expand-environment-variables, --config.file=/config/snmp.yaml]
     envFrom:
       - secretRef:
           name: snmp-exporter-credentials

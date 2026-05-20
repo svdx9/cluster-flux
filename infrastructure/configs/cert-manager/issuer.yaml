@@ -12,7 +12,11 @@ spec:
       name: letsencrypt-dns
     solvers:
       - dns01:
+          cnameStrategy: Follow
           cloudflare:
             apiTokenSecretRef:
               name: cloudflare-api-token
               key: api-token
+    nameservers:
+      - "[2606:4700:4700::1111]:53"
+      - "[2606:4700:4700::1001]:53"

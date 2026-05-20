@@ -63,9 +63,11 @@ modules:
         ignore: true # Lookup metric
       ifType:
         type: EnumAsInfo
+
   opnsense:
     walk:
       - "OPENBSD-BASE-MIB::openBSD"
+      
   truenas:
     walk:
       - "TRUENAS-MIB::trueNas"

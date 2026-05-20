@@ -5,7 +5,7 @@ on:
     branches: [main]
     paths:
       - ".github/workflows/snmp-generate.yaml"
-      - "snmp-generator/**"
+      - "apps/prod/snmp-exporter/generator/**"
   workflow_dispatch:
 
 jobs:
@@ -23,13 +23,13 @@ jobs:
           chmod +x /usr/local/bin/yq
 
       - name: Generate snmp config
-        working-directory: snmp-generator
+        working-directory: apps/prod/snmp-exporter/generator
         run: make generate
 
       - name: Update snmp config file
         run: |
-          CHECKSUM=$(sha256sum snmp-generator/output/snmp.yaml | awk '{print $1}')
-          cp snmp-generator/output/snmp.yaml apps/prod/snmp-exporter/snmp.yaml
+          CHECKSUM=$(sha256sum apps/prod/snmp-exporter/generator/output/snmp.yaml | awk '{print $1}')
+          cp apps/prod/snmp-exporter/generator/output/snmp.yaml apps/prod/snmp-exporter/snmp.yaml
           yq e ".spec.values.podAnnotations[\"checksum/snmp-config\"] = \"$CHECKSUM\"" \
             -i apps/prod/snmp-exporter/release.yaml
 

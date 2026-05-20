@@ -1,0 +1,39 @@
+name: Validate SNMP modules
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "apps/prod/snmp-exporter/generator/generator.yaml"
+      - "apps/prod/snmp-exporter/release.yaml"
+  pull_request:
+    paths:
+      - "apps/prod/snmp-exporter/generator/generator.yaml"
+      - "apps/prod/snmp-exporter/release.yaml"
+  workflow_dispatch:
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install yq
+        run: |
+          wget -qO /usr/local/bin/yq https://github.com/mikefarah/yq/releases/download/v4.53.2/yq_linux_amd64
+          chmod +x /usr/local/bin/yq
+
+      - name: Validate referenced modules exist in generator
+        run: |
+          defined=$(yq '.modules | keys | .[]' apps/prod/snmp-exporter/generator/generator.yaml | sort)
+          referenced=$(yq '.spec.values.serviceMonitor.params[].module[]' apps/prod/snmp-exporter/release.yaml | sort -u)
+
+          failed=0
+          while IFS= read -r mod; do
+            if ! echo "$defined" | grep -qx "$mod"; then
+              echo "ERROR: module '$mod' is referenced in release.yaml but not defined in generator.yaml"
+              failed=1
+            fi
+          done <<< "$referenced"
+
+          exit $failed

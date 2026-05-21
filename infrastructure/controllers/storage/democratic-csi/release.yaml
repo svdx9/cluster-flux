@@ -38,7 +38,7 @@ spec:
         instance_id: iscsi-cluster
         httpConnection:
           protocol: https
-          host: "[fd03:869b:8f3e:0:6ebf:b5ff:fe03:7bbd]"
+          host: tower.bigpri.me
           port: 443
           apiKey: ""
           allowInsecure: false

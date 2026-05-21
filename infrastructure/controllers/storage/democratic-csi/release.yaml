@@ -38,7 +38,7 @@ spec:
         instance_id: iscsi-cluster
         httpConnection:
           protocol: https
-          host: tower.bigpri.me
+          host: "[fd03:869b:8f3e:0:6ebf:b5ff:fe03:7bbd]"
           port: 443
           apiKey: ""
           allowInsecure: false
@@ -47,7 +47,7 @@ spec:
           detachedSnapshotsDatasetParentName: storage/k8s-ds/s
           zvolEnableReservation: false
         iscsi:
-          targetPortal: tower.bigpri.me:3260
+          targetPortal: "[fd03:869b:8f3e:0:6ebf:b5ff:fe03:7bbd]:3260"
           targetGroups:
             - targetGroupPortalGroup: 1
               targetGroupInitiatorGroup: 2

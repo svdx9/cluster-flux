@@ -47,7 +47,7 @@ spec:
           detachedSnapshotsDatasetParentName: storage/k8s-ds/s
           zvolEnableReservation: false
         iscsi:
-          targetPortal: "[fd03:869b:8f3e:0:6ebf:b5ff:fe03:7bbd]:3260"
+          targetPortal: "[fd03:869b:8f3e::3]:3260"
           targetGroups:
             - targetGroupPortalGroup: 1
               targetGroupInitiatorGroup: 2
@@ -63,7 +63,7 @@ spec:
     storageClasses:
       - name: iscsi
         defaultClass: false
-        reclaimPolicy: Delete
+        reclaimPolicy: Retain
         volumeBindingMode: Immediate
         allowVolumeExpansion: true
         parameters:

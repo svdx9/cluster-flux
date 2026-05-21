@@ -1,4 +1,3 @@
-# CRITICAL: Update the addresses to match your home network
 apiVersion: metallb.io/v1beta1
 kind: IPAddressPool
 metadata:
@@ -6,12 +5,22 @@ metadata:
   namespace: metallb-system
 spec:
   addresses:
-    - 10.7.0.248-10.7.0.255
+    - fd03:869b:8f3e::200-fd03:869b:8f3e::2ff
+---
+apiVersion: metallb.io/v1beta2
+kind: BGPPeer
+metadata:
+  name: ipv6-router
+  namespace: metallb-system
+spec:
+  myASN: 64512
+  peerASN: 64512
+  peerAddress: fd03:869b:8f3e::1
 ---
 apiVersion: metallb.io/v1beta1
-kind: L2Advertisement
+kind: BGPAdvertisement
 metadata:
-  name: l2-advert
+  name: bgp-advert
   namespace: metallb-system
 spec:
   ipAddressPools:

@@ -25,6 +25,8 @@ spec:
     node:
       hostPID: true
       driver:
+        image:
+          pullPolicy: IfNotPresent
         extraEnv:
           - name: ISCSIADM_HOST_STRATEGY
             value: nsenter
@@ -32,6 +34,10 @@ spec:
             value: /usr/local/sbin/iscsiadm
         iscsiDirHostPath: /etc/iscsi
         iscsiDirHostPathType: DirectoryOrCreate
+    controller:
+      driver:
+        image:
+          pullPolicy: IfNotPresent
     driver:
       config:
         driver: freenas-api-iscsi

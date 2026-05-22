@@ -5,7 +5,7 @@ metadata:
   namespace: metallb-system
 spec:
   addresses:
-    - fd03:869b:8f3e:0:0:0:ffff::/112
+    - fd1f:0631:3810::/112
 ---
 apiVersion: metallb.io/v1beta2
 kind: BGPPeer

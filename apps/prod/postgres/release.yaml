@@ -55,17 +55,27 @@ spec:
             secretKeyRef:
               name: grafana-db-credentials
               key: grafana-db-password
+        - name: OPENWEBUI_DB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: openwebui-db-credentials
+              key: openwebui-db-password
       initdb:
         scripts:
           init-vector.sql: |
             CREATE EXTENSION IF NOT EXISTS vector;
           init-grafana.sh: |
             #!/bin/bash
-            psql -U postgres -d postgres \
+            psql -U postgres \
               -v grafana_password="$GRAFANA_DB_PASSWORD" \
-              -c "CREATE USER IF NOT EXISTS grafana WITH PASSWORD :'grafana_password';"
-            psql -U postgres -d postgres \
-              -c "CREATE DATABASE grafana OWNER grafana;" || true
+              -c "CREATE ROLE IF NOT EXISTS grafana WITH LOGIN PASSWORD :'grafana_password';"
+            createdb -U postgres -O grafana grafana || true
+          init-openwebui.sh: |
+            #!/bin/bash
+            psql -U postgres \
+              -v openwebui_password="$OPENWEBUI_DB_PASSWORD" \
+              -c "CREATE ROLE IF NOT EXISTS openwebui WITH LOGIN PASSWORD :'openwebui_password';"
+            createdb -U postgres -O openwebui openwebui || true
 
       persistence:
         enabled: true

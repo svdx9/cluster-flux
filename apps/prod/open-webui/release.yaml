@@ -57,11 +57,13 @@ spec:
           secretKeyRef:
             name: openwebui-credentials
             key: WEBUI_SECRET_KEY
-      - name: DATABASE_URL
+      - name: OPENWEBUI_DB_PASSWORD
         valueFrom:
           secretKeyRef:
             name: openwebui-db-credentials
-            key: DATABASE_URL
+            key: openwebui-db-password
+      - name: DATABASE_URL
+        value: "postgresql://openwebui:$(OPENWEBUI_DB_PASSWORD)@prod-postgres-postgresql.prod.svc.cluster.local:5432/openwebui"
       - name: ENABLE_DB_MIGRATIONS
         value: "true"
       - name: DEFAULT_USER_ROLE

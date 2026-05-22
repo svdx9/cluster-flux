@@ -11,3 +11,32 @@ data:
       limiter: false
       image_proxy: true
       base_url: https://search.va1.uk/
+    engines:
+      - name: ahmia
+        disabled: true
+      - name: torch
+        disabled: true
+      - name: google
+        disabled: true
+      - name: google images
+        disabled: true
+      - name: brave
+        disabled: true
+      - name: startpage
+        disabled: true
+      - name: startpage images
+        disabled: true
+      - name: duckduckgo images
+        disabled: true
+      - name: bing images
+        disabled: true
+      - name: qwant images
+        disabled: true
+      - name: flickr
+        disabled: true
+      - name: unsplash
+        disabled: true
+      - name: devicons
+        disabled: true
+      - name: lucide
+        disabled: true

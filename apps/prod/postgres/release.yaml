@@ -53,12 +53,12 @@ spec:
         - name: GRAFANA_DB_PASSWORD
           valueFrom:
             secretKeyRef:
-              name: grafana-db-credentials
+              name: application-db-credentials
               key: grafana-db-password
         - name: OPENWEBUI_DB_PASSWORD
           valueFrom:
             secretKeyRef:
-              name: openwebui-db-credentials
+              name: application-db-credentials
               key: openwebui-db-password
       initdb:
         scripts:

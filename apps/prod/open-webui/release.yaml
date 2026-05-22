@@ -60,7 +60,7 @@ spec:
       - name: OPENWEBUI_DB_PASSWORD
         valueFrom:
           secretKeyRef:
-            name: openwebui-db-credentials
+            name: application-db-credentials
             key: openwebui-db-password
       - name: DATABASE_URL
         value: "postgresql://openwebui:$(OPENWEBUI_DB_PASSWORD)@prod-postgres-postgresql.prod.svc.cluster.local:5432/openwebui"

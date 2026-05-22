@@ -90,7 +90,7 @@ spec:
       envValueFrom:
         GF_DATABASE_PASSWORD:
           secretKeyRef:
-            name: grafana-db-credentials
+            name: application-db-credentials
             key: grafana-db-password
     alertmanager:
       enabled: true

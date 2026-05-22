@@ -6,6 +6,10 @@ metadata:
   namespace: flux-system
 spec:
   interval: 30m
+  timeout: 15m
+  upgrade:
+    remediation:
+      retries: 3
   chart:
     spec:
       chart: postgresql
@@ -51,7 +55,6 @@ spec:
             secretKeyRef:
               name: grafana-db-credentials
               key: grafana-db-password
-
       initdb:
         scripts:
           init-vector.sql: |

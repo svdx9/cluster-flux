@@ -16,6 +16,7 @@ spec:
   myASN: 64512
   peerASN: 64512
   peerAddress: fd03:869b:8f3e::1
+  routerID: 10.0.0.1
 ---
 apiVersion: metallb.io/v1beta1
 kind: BGPAdvertisement

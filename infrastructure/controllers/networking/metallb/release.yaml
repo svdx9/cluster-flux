@@ -19,8 +19,11 @@ spec:
   install:
     createNamespace: true
   values:
-    # Minimal config to get it running
     controller:
       webhookMode: enabled
     speaker:
       tolerateMaster: true
+    frr-k8s:
+      prometheus:
+        serviceMonitor:
+          enabled: true

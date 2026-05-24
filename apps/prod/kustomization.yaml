@@ -13,6 +13,7 @@ resources:
   - snmp-exporter
   - grafana-mcp
   - searxng
+  - postgres-backup
 
 patches:
   - patch: |-

@@ -1,0 +1,58 @@
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: postgres-backup
+  namespace: prod
+spec:
+  schedule: "0 2 * * *"
+  concurrencyPolicy: Forbid
+  failedJobsHistoryLimit: 3
+  successfulJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      backoffLimit: 2
+      template:
+        spec:
+          restartPolicy: OnFailure
+          volumes:
+            - name: backup
+              emptyDir: {}
+            - name: scripts
+              configMap:
+                name: postgres-backup-scripts
+                defaultMode: 0755
+          initContainers:
+            - name: dump
+              image: postgres:18-alpine
+              command: [sh, /scripts/dump.sh]
+              env:
+                - name: POSTGRES_HOST
+                  value: prod-postgres-postgresql.prod.svc.cluster.local
+                - name: POSTGRES_USER
+                  value: postgres
+                - name: PGPASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      name: postgres-credentials
+                      key: postgres-password
+              volumeMounts:
+                - name: backup
+                  mountPath: /backup
+                - name: scripts
+                  mountPath: /scripts
+          containers:
+            - name: upload
+              image: amazon/aws-cli:latest
+              command: [sh, /scripts/upload.sh]
+              env:
+                - name: BACKUP_KEEP_LAST
+                  value: "7"
+              envFrom:
+                - secretRef:
+                    name: postgres-backup-credentials
+              volumeMounts:
+                - name: backup
+                  mountPath: /backup
+                - name: scripts
+                  mountPath: /scripts

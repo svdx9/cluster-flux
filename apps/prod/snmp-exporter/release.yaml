@@ -17,7 +17,8 @@ spec:
       interval: 30m
   values:
     config: ""
-    extraArgs: [--config.expand-environment-variables, --config.file=/config/snmp.yaml]
+    extraArgs:
+      [--config.expand-environment-variables, --config.file=/config/snmp.yaml]
     envFrom:
       - secretRef:
           name: snmp-exporter-credentials
@@ -25,11 +26,11 @@ spec:
       enabled: true
       params:
         - name: opnsense-firewall
-          target: 10.7.0.2
+          target: gw2.bigpri.me
           module: [system, if_mib, opnsense]
           auth: [snmp_user]
         - name: tower
-          target: 10.7.1.0
+          target: tower.bigpri.me
           module: [system, if_mib, truenas]
           auth: [snmp_user]
       metricRelabelings:

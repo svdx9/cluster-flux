@@ -23,7 +23,7 @@ spec:
       - secretRef:
           name: snmp-exporter-credentials
     serviceMonitor:
-      enabled: true
+      enabled: false
       params:
         - name: opnsense-firewall
           target: gw2.bigpri.me

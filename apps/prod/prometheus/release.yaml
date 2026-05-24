@@ -67,6 +67,12 @@ spec:
           - job_name: nixos-bigpri-me
             static_configs:
               - targets: ["nixos.bigpri.me:9273"]
+          - job_name: opnsense-gw2
+            static_configs:
+              - targets: ["gw2.bigpri.me:9100"]
+          - job_name: truenas-tower
+            static_configs:
+              - targets: ["tower.bigpri.me:9100"]
     grafana:
       enabled: true
       deploymentStrategy:

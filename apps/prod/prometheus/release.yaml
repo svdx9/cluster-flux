@@ -67,12 +67,27 @@ spec:
           - job_name: nixos-bigpri-me
             static_configs:
               - targets: ["nixos.bigpri.me:9273"]
+            relabel_configs:
+              - sourceLabels: [__address__]
+                regex: '([^:]+)(?::\d+)?'
+                targetLabel: instance
+                replacement: '$1'
           - job_name: opnsense-gw2
             static_configs:
               - targets: ["gw2.bigpri.me:9100"]
+            relabel_configs:
+              - sourceLabels: [__address__]
+                regex: '([^:]+)(?::\d+)?'
+                targetLabel: instance
+                replacement: '$1'
           - job_name: truenas-tower
             static_configs:
               - targets: ["tower.bigpri.me:9100"]
+            relabel_configs:
+              - sourceLabels: [__address__]
+                regex: '([^:]+)(?::\d+)?'
+                targetLabel: instance
+                replacement: '$1'
     grafana:
       enabled: true
       deploymentStrategy:
@@ -112,5 +127,11 @@ spec:
                   storage: 10Gi
     prometheus-node-exporter:
       enabled: true
+      prometheus:
+        monitor:
+          relabelings:
+            - sourceLabels: [__meta_kubernetes_pod_node_name]
+              targetLabel: instance
+              replacement: "$1"
     kube-state-metrics:
       enabled: true

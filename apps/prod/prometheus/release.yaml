@@ -130,9 +130,9 @@ spec:
       prometheus:
         monitor:
           relabelings:
-            - sourceLabels:
-                - __meta_kubernetes_endpoint_node_name
+            - sourceLabels: [__meta_kubernetes_pod_node_name]
               targetLabel: instance
               replacement: $1
+              action: replace
     kube-state-metrics:
       enabled: true

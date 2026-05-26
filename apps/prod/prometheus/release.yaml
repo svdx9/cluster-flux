@@ -68,26 +68,26 @@ spec:
             static_configs:
               - targets: ["nixos.bigpri.me:9273"]
             relabel_configs:
-              - sourceLabels: [__address__]
+              - source_labels: [__address__]
                 regex: '([^:]+)(?::\d+)?'
-                targetLabel: instance
-                replacement: '$1'
+                target_label: instance
+                replacement: "$1"
           - job_name: opnsense-gw2
             static_configs:
               - targets: ["gw2.bigpri.me:9100"]
             relabel_configs:
-              - sourceLabels: [__address__]
+              - source_labels: [__address__]
                 regex: '([^:]+)(?::\d+)?'
-                targetLabel: instance
-                replacement: '$1'
+                target_label: instance
+                replacement: "$1"
           - job_name: truenas-tower
             static_configs:
               - targets: ["tower.bigpri.me:9100"]
             relabel_configs:
-              - sourceLabels: [__address__]
+              - source_labels: [__address__]
                 regex: '([^:]+)(?::\d+)?'
-                targetLabel: instance
-                replacement: '$1'
+                target_label: instance
+                replacement: "$1"
     grafana:
       enabled: true
       deploymentStrategy:
@@ -130,8 +130,8 @@ spec:
       prometheus:
         monitor:
           relabelings:
-            - sourceLabels: [node]
-              targetLabel: instance
+            - source_labels: [node]
+              target_label: instance
               replacement: "$1"
     kube-state-metrics:
       enabled: true

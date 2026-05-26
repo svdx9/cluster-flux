@@ -64,25 +64,12 @@ spec:
         serviceMonitorSelectorNilUsesHelmValues: false
         podMonitorSelectorNilUsesHelmValues: false
         additionalScrapeConfigs:
-          - job_name: nixos-bigpri-me
+          - job_name: node-exporter
             static_configs:
-              - targets: ["nixos.bigpri.me:9273"]
-            relabel_configs:
-              - source_labels: [__address__]
-                regex: '([^:]+)(?::\d+)?'
-                target_label: instance
-                replacement: "$1"
-          - job_name: opnsense-gw2
-            static_configs:
-              - targets: ["gw2.bigpri.me:9100"]
-            relabel_configs:
-              - source_labels: [__address__]
-                regex: '([^:]+)(?::\d+)?'
-                target_label: instance
-                replacement: "$1"
-          - job_name: truenas-tower
-            static_configs:
-              - targets: ["tower.bigpri.me:9100"]
+              - targets:
+                  - "nixos.bigpri.me:9273"
+                  - "gw2.bigpri.me:9100"
+                  - "tower.bigpri.me:9100"
             relabel_configs:
               - source_labels: [__address__]
                 regex: '([^:]+)(?::\d+)?'

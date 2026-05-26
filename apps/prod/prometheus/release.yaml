@@ -130,8 +130,8 @@ spec:
       prometheus:
         monitor:
           relabelings:
-            - source_labels: [node]
-              target_label: instance
+            - sourceLabels: [node]
+              targetLabel: instance
               replacement: "$1"
     kube-state-metrics:
       enabled: true

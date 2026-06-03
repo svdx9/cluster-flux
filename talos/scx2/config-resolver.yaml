@@ -1,0 +1,4 @@
+apiVersion: v1alpha1
+kind: ResolverConfig
+nameservers:
+  - address: fd03:869b:8f3e::1

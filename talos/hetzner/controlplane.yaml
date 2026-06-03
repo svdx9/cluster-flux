@@ -25,8 +25,6 @@ machine:
         hostDNS:
             enabled: true
             forwardKubeDNSToHost: true
-    nodeLabels:
-        node.kubernetes.io/exclude-from-external-load-balancers: ""
 cluster:
     id: lrlG2oG8xmJGgJFMiQZ6qFzRoXznQNTwlqCK6B0t95E=
     secret: PuBvD2ts43EtwL2qOsJStNgyB0vBh04EPYUE9pduAkw=

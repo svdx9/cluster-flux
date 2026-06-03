@@ -19,6 +19,8 @@ spec:
   storageNamespace: kube-system
   targetNamespace: kube-system
   values:
+    cluster:
+      name: scx2
     ipam:
       mode: kubernetes
     kubeProxyReplacement: false

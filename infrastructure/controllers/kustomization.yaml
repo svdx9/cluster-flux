@@ -5,5 +5,6 @@ resources:
   - networking/gateway-api
   - networking/metallb
   - networking/nginx-gateway
+  - networking/cilium
   - security/cert-manager
   - storage/democratic-csi

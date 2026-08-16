@@ -2,10 +2,6 @@
 
 GitOps configuration for a homelab Kubernetes cluster. Flux CD reconciles the cluster state from this repository.
 
-This repo also carries a Claude Code "software factory" configuration
-(`.claude/`) — a 7-agent build pipeline with scoped permissions and
-enforcement hooks. See [`docs/software-factory.md`](docs/software-factory.md).
-
 ## Repository Structure
 
 ```
